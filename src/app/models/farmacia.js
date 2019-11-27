@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../../database');
 
 const FarmaciaSchema = new mongoose.Schema({
     name: {
@@ -12,15 +12,8 @@ const FarmaciaSchema = new mongoose.Schema({
     telefone: {
         type: String,
         require: true
-    },
-    plantao: {
-        type: Date,
-        require: false
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
+
 });
 
 const Farmacia = mongoose.model('Farmacia', FarmaciaSchema);

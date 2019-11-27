@@ -8,5 +8,7 @@ const config = {
 }
 
 mongoose.connect(florenConnection, config);
+console.log('Connected to mongoDB!');
+
 
 module.exports = mongoose;
