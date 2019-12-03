@@ -27,6 +27,7 @@ router.post('/register', async (req, res) => {
         });
 
     } catch (err) {
+
         return res.status(400).send({ error: 'Registration failed' });
     }
 });
@@ -48,6 +49,8 @@ router.post('/authenticate', async (req, res) => {
         });
 
     } catch (err) {
+        console.log(err);
+
         return res.status(400).send({ error: 'Something went wrong please try again later' })
     }
 });

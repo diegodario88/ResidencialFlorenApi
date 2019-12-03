@@ -1,19 +1,15 @@
 const mongoose = require('../../database/index');
 
-
 const plantaoScheme = new mongoose.Schema({
     name: {
         type: String,
         require: true
     },
-    farmaciaPrincipal: {
-        type: Number,
+    farmacias: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Farmacia',
         required: true
-    },
-    farmaciaSecundaria: {
-        type: Number,
-        required: true
-    },
+    }],
     escala: {
         type: Date,
         require: false,

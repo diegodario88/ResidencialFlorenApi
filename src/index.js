@@ -18,8 +18,6 @@ const route = router.get('/', (req, res, next) => {
 });
 
 require('./app/controllers/authController')(app);
-require('./app/controllers/projectController')(app);
-require('./app/controllers/farmaciaController')(app);
 require('./app/controllers/plantaoController')(app);
 
 app.listen(port);
