@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
-const db = require('../config/auth.json')
-const florenConnection = db.connectionString || process.env.MONGO_URL;
-
+require("dotenv").config();
 
 const config = {
     promiseLibrary: global.Promise,
@@ -9,7 +7,7 @@ const config = {
     useUnifiedTopology: true
 }
 
-mongoose.connect(florenConnection, config);
+mongoose.connect(process.env.MONGO_URL, config);
 console.log('Connected to mongoDB!');
 
 
