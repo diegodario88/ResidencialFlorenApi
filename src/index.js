@@ -13,8 +13,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const route = router.get('/', (req, res, next) => {
     res.status(200).send({
         title: 'ResidencialFloren - Api',
-        description: 'Forneçe informações sobre as farmácias de plantão',
-        version: '0.0.1',
+        description: 'Fornece informações sobre as farmácias de plantão',
+        route: '/api/v1/plantoes/atual',
+        version: '1.0.0',
         author: 'Diego Dario'
     })
 });

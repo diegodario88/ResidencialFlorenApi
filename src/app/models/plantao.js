@@ -10,10 +10,20 @@ const plantaoScheme = new mongoose.Schema({
         ref: 'Farmacia',
         required: true
     }],
-    escala: {
+    escalaSemanal: {
         type: Date,
         require: false,
-        default: Date.now
+
+    },
+    escalaSabado: {
+        type: Date,
+        require: false,
+
+    },
+    escalaDomingo: {
+        type: Date,
+        require: false,
+
     }
 
 });
