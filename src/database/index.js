@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const db = require('../config/auth.json')
-const florenConnection = db.connectionString;
+const florenConnection = db.connectionString || process.env.MONGO_URL;
 
 
 const config = {

@@ -7,7 +7,7 @@ const authConfig = require('../../config/auth.json')
 const router = express.Router();
 
 function generateToken(params = {}) {
-    return jwt.sign(params, authConfig.secret, {
+    return jwt.sign(params, authConfig.secret || process.env.SECRET, {
         expiresIn: 86400,
     });
 };
