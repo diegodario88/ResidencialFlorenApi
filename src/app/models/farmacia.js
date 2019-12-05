@@ -16,6 +16,6 @@ const FarmaciaSchema = new mongoose.Schema({
 
 });
 
-const Farmacia = mongoose.model('Farmacia', FarmaciaSchema);
+const Farmacia = mongoose.model('Farmacia', FarmaciaSchema, 'Farmacias', { versionKey: false });
 
 module.exports = Farmacia;

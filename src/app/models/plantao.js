@@ -18,6 +18,6 @@ const plantaoScheme = new mongoose.Schema({
 
 });
 
-const Plantao = mongoose.model('Plantao', plantaoScheme);
+const Plantao = mongoose.model('Plantao', plantaoScheme, 'Plantoes', { versionKey: false });
 
 module.exports = Plantao;

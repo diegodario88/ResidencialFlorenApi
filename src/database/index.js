@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const florenConnection = 'mongodb://172.17.0.2:27017/floren';
+const db = require('../config/auth.json')
+const florenConnection = db.connectionString;
+
 
 const config = {
     promiseLibrary: global.Promise,
