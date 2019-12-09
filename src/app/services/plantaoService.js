@@ -6,6 +6,7 @@ exports.atualizaPlantao = async function ({ data }) {
     try {
         const date = new Date();
         const dia = date.getDay();
+        console.log('Data atual do server: ' + date);
 
         if (dia > 0 && dia < 6) {
             const res = await Repository
