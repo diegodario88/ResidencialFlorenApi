@@ -10,8 +10,7 @@ const router = express.Router();
 router.get('/atual', async (req, res) => {
     try {
         const data = await plantaoService.verificaPlantao();
-
-        await plantaoService.atualizaPlantao({ data });
+        const next = await plantaoService.getByStatus();
 
         res.status(200).send(data);
 

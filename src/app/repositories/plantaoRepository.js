@@ -25,7 +25,7 @@ exports.getOne = async (filter) => {
 exports.getByName = async (name) => {
     try {
         const res = await Plantao
-            .findOne({ name }, 'name farmacias escala')
+            .findOne({ name }, 'name farmacias status')
             .populate('farmacias', 'name endereco telefone');
         return res;
 
@@ -33,14 +33,34 @@ exports.getByName = async (name) => {
         return ({ error: 'Error cannot find plantão by name' })
     }
 }
-
-exports.findOneUpdate = async (filter, update, config) => {
+exports.getByNumber = async (number) => {
     try {
         const res = await Plantao
-            .findOneAndUpdate(filter, update, config);
+            .findOne({}, 'name farmacias')
+            .populate('farmacias', 'name endereco telefone')
+            .where('numero').equals(number);
         return res;
 
     } catch (err) {
-        return ({ error: 'Error trying to fiund and update' })
+        return ({ error: 'Error cannot find plantão by name' })
+    }
+}
+
+exports.updateDatePlantao = async (filter, update, config) => {
+    try {
+        await Plantao
+            .updateOne(filter, update, config);
+        return ({ success: 'Success' });
+
+    } catch (err) {
+        return ({ error: 'Error trying to update' })
+    }
+}
+
+exports.findWhere = async () => {
+    try {
+        return await Plantao.findOne().where('status').equals('true');
+    } catch (error) {
+        return ({ error: 'Failure =(' })
     }
 }

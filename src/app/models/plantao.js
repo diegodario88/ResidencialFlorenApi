@@ -5,6 +5,14 @@ const plantaoScheme = new mongoose.Schema({
         type: String,
         require: true
     },
+    numero: {
+        type: Number,
+        required: false
+    },
+    status: {
+        type: Boolean,
+        required: false
+    },
     farmacias: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Farmacia',
