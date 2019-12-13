@@ -1,5 +1,18 @@
-# Residencial Floren API
-Um modelo de API RESTish moderadamente opinativo criado com Node.js
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <a href="https://residencialfloren.firebaseapp.com/">
+    <img src="./nodejs-cli-banner.png" alt="Logo" width="1000" height="200">
+  </a>
+
+  <h3 align="center">Residencial Floren API</h3>
+
+  <p align="center">
+    Um modelo de API RESTish moderadamente opinativo criado com Node.js
+    <br />
+    
+  </p>
+</p>
 
 ### About
 Projetado para abstrair minimamente a lógica do banco de dados, esse modelo cria decisões comuns de design de API e permite distribuir rapidamente seus dados em formatos comuns, como JSON e CSV. 
