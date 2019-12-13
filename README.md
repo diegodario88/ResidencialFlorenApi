@@ -35,8 +35,11 @@ Each version of the API functions as a self-contained module, and therefore has 
 ### Install
 ````
 git clone https://github.com/diegodario88/ResidencialFlorenApi.git
+
 cd ResidencialFlorenApi
+
 npm install
+
 ````
 
 ### Start
