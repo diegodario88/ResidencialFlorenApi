@@ -3,6 +3,7 @@ const express = require('express');
 const Plantao = require('../models/plantao')
 const repository = require('../repositories/plantaoRepository')
 const plantaoService = require('../services/plantaoService');
+const googleService = require('../services/googleService')
 
 const router = express.Router();
 
@@ -11,8 +12,14 @@ router.get('/atual', async (req, res) => {
     try {
         const data = await plantaoService.verificaPlantao();
         const next = await plantaoService.getByStatus();
+        const geoLocalization =
+            await googleService.geoLocalization([data.farmacias[0].endereco, data.farmacias[1].endereco]);
 
-        res.status(200).send(data);
+        const plantaoAtual = new Plantao(data);
+        plantaoAtual.farmacias[0].geoloc = geoLocalization[0].geometry.location;
+        plantaoAtual.farmacias[1].geoloc = geoLocalization[1].geometry.location;
+
+        res.status(200).send(plantaoAtual);
 
     } catch (err) {
 

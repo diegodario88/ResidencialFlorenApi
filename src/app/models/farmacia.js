@@ -12,6 +12,10 @@ const FarmaciaSchema = new mongoose.Schema({
     telefone: {
         type: String,
         require: true
+    },
+    geoloc: {
+        type: Object,
+        require: false
     }
 
 });
