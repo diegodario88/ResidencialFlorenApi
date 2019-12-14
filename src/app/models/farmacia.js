@@ -16,6 +16,10 @@ const FarmaciaSchema = new mongoose.Schema({
     geoloc: {
         type: Object,
         require: false
+    },
+    place_id: {
+        type: String,
+        required: false
     }
 
 });

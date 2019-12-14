@@ -1,4 +1,3 @@
-'use strict';
 const express = require('express');
 const Plantao = require('../models/plantao')
 const repository = require('../repositories/plantaoRepository')
@@ -13,11 +12,13 @@ router.get('/atual', async (req, res) => {
         const data = await plantaoService.verificaPlantao();
         const next = await plantaoService.getByStatus();
         const geoLocalization =
-            await googleService.geoLocalization([data.farmacias[0].endereco, data.farmacias[1].endereco]);
+            await googleService.geoLocalization(data.farmacias[0].endereco, data.farmacias[1].endereco);
 
         const plantaoAtual = new Plantao(data);
         plantaoAtual.farmacias[0].geoloc = geoLocalization[0].geometry.location;
+        plantaoAtual.farmacias[0].place_id = geoLocalization[0].place_id;
         plantaoAtual.farmacias[1].geoloc = geoLocalization[1].geometry.location;
+        plantaoAtual.farmacias[1].place_id = geoLocalization[1].place_id;
 
         res.status(200).send(plantaoAtual);
 
