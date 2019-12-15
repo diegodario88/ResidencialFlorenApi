@@ -23,7 +23,6 @@ router.get('/atual', async (req, res) => {
         res.status(200).send(plantaoAtual);
 
     } catch (err) {
-
         res.status(500).send({ error: 'Error while loading plantão atual' })
     }
 });
