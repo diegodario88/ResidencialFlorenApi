@@ -166,7 +166,7 @@ exports.verificaPlantao = async function () {
                 return await Repository.getByName("G04"); //Sábado
 
             case "22/12/2019":
-                return await Repository.getByName("G13"); //Domingo
+                return await Repository.getByName("G02"); //Domingo
 
             case "23/12/2019":
                 return await Repository.getByName("G08");
@@ -187,7 +187,7 @@ exports.verificaPlantao = async function () {
                 return await Repository.getByName("G05"); //Sábado
 
             case "29/12/2019":
-                return await Repository.getByName("G01"); //Domingo
+                return await Repository.getByName("G03"); //Domingo
 
             case "30/12/2019":
                 return await Repository.getByName("G13");

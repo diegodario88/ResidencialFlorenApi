@@ -10,19 +10,14 @@ const router = express.Router();
 router.get('/atual', async (req, res) => {
     try {
         const data = await plantaoService.verificaPlantao();
-        const next = await plantaoService.getByStatus();
-        const geoLocalization =
-            await googleService.geoLocalization(data.farmacias[0].endereco, data.farmacias[1].endereco);
+        
+        //const next = await plantaoService.getByStatus(); TODO:
 
         const plantaoAtual = new Plantao(data);
-        plantaoAtual.farmacias[0].geoloc = geoLocalization[0].geometry.location;
-        plantaoAtual.farmacias[0].place_id = geoLocalization[0].place_id;
-        plantaoAtual.farmacias[1].geoloc = geoLocalization[1].geometry.location;
-        plantaoAtual.farmacias[1].place_id = geoLocalization[1].place_id;
-
         res.status(200).send(plantaoAtual);
 
     } catch (err) {
+        console.log(err);
 
         res.status(500).send({ error: 'Error while loading plantão atual' })
     }
