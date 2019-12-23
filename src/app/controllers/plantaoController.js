@@ -1,19 +1,15 @@
 const express = require('express');
-const Plantao = require('../models/plantao')
-const repository = require('../repositories/plantaoRepository')
+const Plantao = require('../models/plantao');
+const repository = require('../repositories/plantaoRepository');
 const plantaoService = require('../services/plantaoService');
-const googleService = require('../services/googleService')
-
 const router = express.Router();
 
 //Lista plantão atual
 router.get('/atual', async (req, res) => {
     try {
         const data = await plantaoService.verificaPlantao();
-        
-        //const next = await plantaoService.getByStatus(); TODO:
-
         const plantaoAtual = new Plantao(data);
+        plantaoService.proximoPlantao(plantaoAtual);
         res.status(200).send(plantaoAtual);
 
     } catch (err) {

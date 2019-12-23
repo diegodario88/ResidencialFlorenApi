@@ -1,4 +1,5 @@
 const Repository = require('../repositories/plantaoRepository');
+const dataService = require('./dataService');
 
 function dataAtualFormatada() {
     Date.prototype.addHours = function (value) {
@@ -16,44 +17,62 @@ function dataAtualFormatada() {
     return diaF + "/" + mesF + "/" + anoF;
 }
 
-
-
-
 function diaAtualSemana() {
     const date = new Date();
     return date.getDay();
 }
 
-exports.atualizaDataPlantao = async function ({ data }) {
-
+exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, tipo) {
     TODO:
-    //Funcão verifica e atualiza data da escala do plantão
+    //Funcão verifica e atualiza dados do plantão para que a busca do plantão atual tenha sua lógica funcional
     try {
+        const date = new Date();
+        console.log(`Atualizando dados...Data: ${date} tipo: ${tipo}`);
 
-        const dia = diaAtualSemana();
-
-        if (dia > 0 && dia < 6) {
+        if (tipo === 1) {
             await Repository
-                .updateDatePlantao({ _id: data._id }, { escalaSemanal: date }, { upsert: true, new: true });
+                .updatePlantao({ _id: plantaoAnterior._id }, { escalaSemanal: date, statusSemanal: false }
+                    , { upsert: true, new: true });
+            console.info('Atualização do plantão anterior semanal feita com sucesso!');
 
-        } if (dia == 6) {
             await Repository
-                .updateDatePlantao({ _id: data._id }, { escalaSabado: date }, { upsert: true, new: true });
+                .updatePlantao(
+                    { _id: plantaoAtual._id }, { statusSemanal: true }
+                    , { upsert: true, new: true });
+            console.info('Atualização do plantão atual feita com sucesso!');
+            dataService.armazenaDiaPlantao(plantaoAnterior.escalaSemanal);
 
+        } if (tipo === 2) {
+            await Repository
+                .updatePlantao({ _id: plantaoAnterior._id }, { escalaSabado: date, statusSabado: false }
+                    , { upsert: true, new: true });
+            console.info('Atualização do plantão anterior de sábado feita com sucesso!');
+
+            await Repository
+                .updatePlantao(
+                    { _id: plantaoAtual._id }, { statusSabado: true }
+                    , { upsert: true, new: true });
+            console.info('Atualização do plantão atual de sábado feita com sucesso!');
+            dataService.armazenaDiaPlantao(plantaoAnterior.escalaSabado);
+        } else if (tipo === 3) {
+            await Repository
+                .updatePlantao({ _id: plantaoAnterior._id }, { escalaDomingo: date, statusDomingo: false }
+                    , { upsert: true, new: true });
+            console.info('Atualização do plantão anterior de domingo feita com sucesso!')
+
+            await Repository
+                .updatePlantao(
+                    { _id: plantaoAtual._id }, { statusDomingo: true }
+                    , { upsert: true, new: true });
+            console.info('Atualização do plantão atual de domingo feita com sucesso!');
+            dataService.armazenaDiaPlantao(plantaoAnterior.escalaDomingo);
         }
-        await Repository
-            .updateDatePlantao({ _id: data._id }, { escalaDomingo: date }, { upsert: true, new: true });
+
     } catch (err) {
-        return ({ error: 'Error when trying to update' });
+        return ({ error: 'Error when trying to update plantão data' });
     }
 }
 
-
-TODO:
-//Implementar uma função para setar o plantão atual como false e passar o retorno 
-//de proximoPlantao para o controller.
-//Em uma determinada condição que será a troca do dateTime.
-//Talvez implementar status semanal/sabadal e domingal???
 exports.proximoPlantao = async function (plantao) {
     try {
         const dia = diaAtualSemana();
@@ -64,50 +83,65 @@ exports.proximoPlantao = async function (plantao) {
         if (dia > 0 && dia < sabado) {
             //Semanal
             let contadorSemanal = plantao.numero;
-
             if (plantao.numero === contadorSemanal) {
-
                 if (contadorSemanal > 0 && contadorSemanal < ultimoGrupo) {
                     const numeroProximoPlantao = contadorSemanal + 1;
-                    return await Repository.getByNumber(numeroProximoPlantao);
-                }
+                    const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
+                    const tipoSemanal = 1;
+                    this.atualizaDadosPlantao(plantao, proximoPlantao, tipoSemanal);
+                    console.info('Próximo plantão semanal definido com sucesso.');
 
-                const numeroProximoPlantao = inicioGrupo;
-                return await Repository.getByNumber(numeroProximoPlantao);
+                } else {
+                    const numeroProximoPlantao = inicioGrupo;
+                    const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
+                    const tipoSemanal = 1;
+                    atualizaDadosPlantao(plantao, proximoPlantao, tipoSemanal);
+                    console.info('Próximo plantão inicial da semana definido com sucesso.');
+                }
             }
 
         } if (dia === sabado) {
             //Sábado
             let contadorSabado = plantao.numero;
+
             if (plantao.numero === contadorSabado) {
                 if (contadorSemanal > 0 && contadorSemanal < ultimoGrupo) {
                     const numeroProximoPlantao = contadorSemanal + 1;
-                    return await Repository.getByNumber(numeroProximoPlantao)
+                    const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
+                    const tipoSabadal = 2;
+                    atualizaDadosPlantao(plantao, proximoPlantao, tipoSabadal);
+                    console.info('Próximo plantão sabadal definido com sucesso.');
+                } else {
+                    const numeroProximoPlantao = inicioGrupo;
+                    const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
+                    const tipoSabadal = 2;
+                    atualizaDadosPlantao(plantao, proximoPlantao, tipoSabadal);
+                    console.info('Próximo plantão sabadal definido com sucesso.');
                 }
-                const numeroProximoPlantao = inicioGrupo;
-                return await Repository.getByNumber(numeroProximoPlantao);
             }
         }
         //Domingo
         let contadorDomingo = plantao.numero;
+
         if (plantao.numero === contadorDomingo) {
             if (contadorSemanal > 0 && contadorSemanal < ultimoGrupo) {
                 const numeroProximoPlantao = contadorSemanal + 1;
-                return Repository.getByNumber(numeroProximoPlantao)
+                const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
+                const tipoDomingal = 3;
+                atualizaDadosPlantao(plantao, proximoPlantao, tipoDomingal);
+                console.info('Próximo plantão domingal definido com sucesso.');
+            } else {
+                const numeroProximoPlantao = inicioGrupo;
+                const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
+                const tipoDomingal = 3
+                atualizaDadosPlantao(plantao, proximoPlantao, tipoDomingal);
+                console.info('Próximo plantão domingal definido com sucesso.');
             }
-            const numeroProximoPlantao = inicioGrupo;
-            return Repository.getByNumber(numeroProximoPlantao);
         }
 
     } catch (err) {
         return ({ error: 'Error when trying to set next Plantão' });
     }
-}
-
-exports.getByStatus = async function () {
-    const plantao = await Repository.findWhere();
-    const proximo = await this.proximoPlantao(plantao);
-    return proximo;
 }
 
 //Função devolve o plantão atual
