@@ -1,12 +1,11 @@
 const Repository = require('../repositories/plantaoRepository');
-const dataService = require('../services/dataService');
 
 function dataAtualFormatada() {
     Date.prototype.addHours = function (value) {
         this.setHours(this.getHours() + value);
     }
 
-    const data = new Date();
+    let data = new Date();
     data.addHours(-3);
     dia = data.getDate().toString();
     diaF = (dia.length == 1) ? '0' + dia : dia;
@@ -17,8 +16,12 @@ function dataAtualFormatada() {
     return diaF + "/" + mesF + "/" + anoF;
 }
 
-function diaAtualSemana() {
-    const date = new Date();
+exports.diaAtualSemana = () => {
+    Date.prototype.addHours = function (value) {
+        this.setHours(this.getHours() + value);
+    }
+    let date = new Date();
+    date.addHours(-3);
     return date.getDay();
 }
 
@@ -63,11 +66,7 @@ exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, ti
                     { _id: plantaoAtual._id }, { escalaDomingo: date, statusDomingo: true }
                     , { upsert: true, new: true });
             console.debug('Atualização do plantão atual de domingo feita com sucesso!');
-
         }
-
-        //Chama monitor passando o plantaoID e o tipo para ele buscar a data e comparar com a data atual
-        dataService.monitorData(plantaoAtual._id, tipo);
 
     } catch (err) {
         return ({ error: 'Error when trying to update plantão data' });
@@ -76,7 +75,7 @@ exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, ti
 
 exports.proximoPlantao = async function () {
     try {
-        const dia = diaAtualSemana();
+        const dia = this.diaAtualSemana();
         const sabado = 6;
         const ultimoGrupo = 13;
         const inicioGrupo = 1;
@@ -148,7 +147,21 @@ exports.proximoPlantao = async function () {
         return ({ error: 'Error when trying to set next Plantão' });
     }
 }
+exports.procuraPlantao = async () => {
+    try {
+        const dia = this.diaAtualSemana();
+        const sabado = 6;
 
+        if (dia > 0 && dia < sabado) return await Repository.getByStatusSemanal();
+
+        if (dia === sabado) return await Repository.getByStatusSabadal();
+
+        else return await Repository.getByStatusDomingal();
+
+    } catch (error) {
+        console.log(error);
+    }
+}
 //Função devolve o plantão atual
 exports.verificaPlantao = async function () {
     try {

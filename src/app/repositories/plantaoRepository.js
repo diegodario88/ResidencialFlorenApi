@@ -69,7 +69,9 @@ exports.updatePlantao = async (filter, update, config) => {
 
 exports.getByStatusSemanal = async () => {
     try {
-        return await Plantao.findOne().where('statusSemanal').equals('true');
+        return await Plantao.findOne()
+            .populate('farmacias', 'name endereco telefone')
+            .where('statusSemanal').equals('true');
     } catch (error) {
         return ({ error: 'Failure =(' })
     }
@@ -77,7 +79,9 @@ exports.getByStatusSemanal = async () => {
 
 exports.getByStatusSabadal = async () => {
     try {
-        return await Plantao.findOne().where('statusSabado').equals('true');
+        return await Plantao.findOne()
+            .populate('farmacias', 'name endereco telefone')
+            .where('statusSabado').equals('true');
     } catch (error) {
         return ({ error: 'Failure =(' })
     }
@@ -85,7 +89,9 @@ exports.getByStatusSabadal = async () => {
 
 exports.getByStatusDomingal = async () => {
     try {
-        return await Plantao.findOne().where('statusDomingo').equals('true');
+        return await Plantao.findOne()
+            .populate('farmacias', 'name endereco telefone')
+            .where('statusDomingo').equals('true');
     } catch (error) {
         return ({ error: 'Failure =(' })
     }
