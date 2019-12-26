@@ -47,3 +47,5 @@ const interval = minutes * 60 * 1000;
     console.warn('Monitorando Data -->');
     verificaData(new Date().getDate()).catch(console.warn);
 }, interval));
+
+module.exports = app => app.use(verificaData);
