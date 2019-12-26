@@ -1,20 +1,20 @@
 const Repository = require('../repositories/plantaoRepository');
 const plantaoService = require('../services/plantaoService');
 
-exports.buscaDataPlantao = async function (id, tipo) {
+exports.monitorData = async function (id, tipo) {
+
     const result = await Repository.findByID(id);
     let diaPlantao = null;
-    let plantaoAtual = null;
 
     if (tipo === 1) {
         diaPlantao = result.escalaSemanal.getDate();
-        plantaoAtual = await Repository.getByStatusSemanal();
+
     } else if (tipo === 2) {
         diaPlantao = result.escalaSabado.getDate();
-        plantaoAtual = await Repository.getByStatusSabadal();
+
     } else {
         diaPlantao = result.escalaDomingo.getDate();
-        plantaoAtual = await Repository.getByStatusDomingal();
+
     }
 
     const verificaData = async function (diaAtual) {
@@ -22,7 +22,7 @@ exports.buscaDataPlantao = async function (id, tipo) {
         if (diaAtual !== diaPlantao) {
             console.info('dia mudou para ' + diaAtual);
             console.warn(plantaoAtual);
-            plantaoService.proximoPlantao(plantaoAtual);
+            plantaoService.proximoPlantao();
         }
         return console.info('dia continua o mesmo do plantão ' + diaPlantao);
     }
