@@ -5,7 +5,14 @@ const Plantao = require('../models/plantao')
 
 exports.get = async () => {
     const res = await Plantao
-        .find({}, 'name farmacias escala')
+        .find({})
+        .populate('farmacias', 'name endereco telefone');
+    return res;
+}
+
+exports.findByID = async (id) => {
+    const res = await Plantao
+        .findOne({ _id: id })
         .populate('farmacias', 'name endereco telefone');
     return res;
 }
@@ -60,7 +67,7 @@ exports.updatePlantao = async (filter, update, config) => {
     }
 }
 
-exports.statusSemanal = async () => {
+exports.getByStatusSemanal = async () => {
     try {
         return await Plantao.findOne().where('statusSemanal').equals('true');
     } catch (error) {
@@ -68,7 +75,7 @@ exports.statusSemanal = async () => {
     }
 }
 
-exports.statusSabadal = async () => {
+exports.getByStatusSabadal = async () => {
     try {
         return await Plantao.findOne().where('statusSabado').equals('true');
     } catch (error) {
@@ -76,7 +83,7 @@ exports.statusSabadal = async () => {
     }
 }
 
-exports.statusDomingal = async () => {
+exports.getByStatusDomingal = async () => {
     try {
         return await Plantao.findOne().where('statusDomingo').equals('true');
     } catch (error) {

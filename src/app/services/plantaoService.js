@@ -1,5 +1,5 @@
 const Repository = require('../repositories/plantaoRepository');
-const dataService = require('./dataService');
+const dataService = require('../services/dataService');
 
 function dataAtualFormatada() {
     Date.prototype.addHours = function (value) {
@@ -23,49 +23,52 @@ function diaAtualSemana() {
 }
 
 exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, tipo) {
+
+    //Chama dataService passando o plantaoID e o tipo para ele buscar a data e comparar com a data atual
+    dataService.buscaDataPlantao(plantaoAnterior._id, tipo);
+
     TODO:
     //Funcão verifica e atualiza dados do plantão para que a busca do plantão atual tenha sua lógica funcional
     try {
         const date = new Date();
-        console.log(`Atualizando dados...Data: ${date} tipo: ${tipo}`);
+        console.log(`Atualizando dados... Date: ${date} Type: ${tipo}`);
 
         if (tipo === 1) {
             await Repository
                 .updatePlantao({ _id: plantaoAnterior._id }, { escalaSemanal: date, statusSemanal: false }
                     , { upsert: true, new: true });
-            console.info('Atualização do plantão anterior semanal feita com sucesso!');
+            console.debug('Atualização do plantão anterior semanal feita com sucesso!');
 
             await Repository
                 .updatePlantao(
                     { _id: plantaoAtual._id }, { statusSemanal: true }
                     , { upsert: true, new: true });
-            console.info('Atualização do plantão atual feita com sucesso!');
-            dataService.armazenaDiaPlantao(plantaoAnterior.escalaSemanal);
+            console.debug('Atualização do plantão atual feita com sucesso!');
 
         } if (tipo === 2) {
             await Repository
                 .updatePlantao({ _id: plantaoAnterior._id }, { escalaSabado: date, statusSabado: false }
                     , { upsert: true, new: true });
-            console.info('Atualização do plantão anterior de sábado feita com sucesso!');
+            console.debug('Atualização do plantão anterior de sábado feita com sucesso!');
 
             await Repository
                 .updatePlantao(
                     { _id: plantaoAtual._id }, { statusSabado: true }
                     , { upsert: true, new: true });
-            console.info('Atualização do plantão atual de sábado feita com sucesso!');
-            dataService.armazenaDiaPlantao(plantaoAnterior.escalaSabado);
+            console.debug('Atualização do plantão atual de sábado feita com sucesso!');
+
         } else if (tipo === 3) {
             await Repository
                 .updatePlantao({ _id: plantaoAnterior._id }, { escalaDomingo: date, statusDomingo: false }
                     , { upsert: true, new: true });
-            console.info('Atualização do plantão anterior de domingo feita com sucesso!')
+            console.debug('Atualização do plantão anterior de domingo feita com sucesso!')
 
             await Repository
                 .updatePlantao(
                     { _id: plantaoAtual._id }, { statusDomingo: true }
                     , { upsert: true, new: true });
-            console.info('Atualização do plantão atual de domingo feita com sucesso!');
-            dataService.armazenaDiaPlantao(plantaoAnterior.escalaDomingo);
+            console.debug('Atualização do plantão atual de domingo feita com sucesso!');
+
         }
 
     } catch (err) {

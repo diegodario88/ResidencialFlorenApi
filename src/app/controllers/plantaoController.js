@@ -9,16 +9,13 @@ router.get('/atual', async (req, res) => {
     try {
         const data = await plantaoService.verificaPlantao();
         const plantaoAtual = new Plantao(data);
-        plantaoService.proximoPlantao(plantaoAtual);
         res.status(200).send(plantaoAtual);
 
     } catch (err) {
         console.log(err);
-
         res.status(500).send({ error: 'Error while loading plantão atual' })
     }
 });
-
 
 //Lista todos
 router.get('/', async (req, res) => {
@@ -45,6 +42,5 @@ router.get('/:name', async (req, res) => {
         res.status(500).send({ error: 'Error while loading plantão by name' })
     }
 });
-
 
 module.exports = app => app.use('/api/v1/plantoes', router);

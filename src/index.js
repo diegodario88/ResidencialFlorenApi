@@ -24,6 +24,7 @@ require('./app/controllers/authController')(app);
 require('./app/controllers/farmaciaController')(app);
 require('./app/controllers/plantaoController')(app);
 
+
 app.listen(port);
 app.use('/', route);
 console.log(`ResidencialFloren-Api em execução... port:${port} recebendo requisições.`);
