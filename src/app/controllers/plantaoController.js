@@ -12,8 +12,7 @@ router.get('/atual', async (req, res) => {
         res.status(200).send(plantaoAtual);
 
     } catch (err) {
-        console.log(err);
-        res.status(500).send({ error: 'Error while loading plantão atual' })
+        res.status(500).send({ error: 'Erramos aqui. Não consegui fornecer o plantão no /atual.' })
     }
 });
 
