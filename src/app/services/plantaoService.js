@@ -28,48 +28,62 @@ exports.diaAtualSemana = () => {
 exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, tipo) {
 
     try {
-        const date = new Date();
-        console.log(`Atualizando dados --> Date: ${date} Type: ${tipo}`);
+        //Corrigi data para UTC -3
+        Date.prototype.addHours = function (value) {
+            this.setHours(this.getHours() + value);
+        }
+        let date = new Date();
+        date.addHours(-3);
+
+        console.log(`Atualizando dados --> 
+            Data: ${date} 
+            Tipo: ${tipo}
+            _____________
+
+            Plantão anterior: ${plantaoAnterior.name}
+            Plantão atual: ${plantaoAtual.name}
+       
+            `);
 
         if (tipo === 1) {
             await Repository
                 .updatePlantao({ _id: plantaoAnterior._id }, { statusSemanal: false }
                     , { upsert: true, new: true });
-            console.debug('Atualização do plantão anterior semanal feita com sucesso!');
+            console.debug(`Atualizando status semanal do plantão ${plantaoAnterior.name}`);
 
             await Repository
                 .updatePlantao(
                     { _id: plantaoAtual._id }, { escalaSemanal: date, statusSemanal: true }
                     , { upsert: true, new: true });
-            console.debug('Atualização do plantão atual feita com sucesso!');
+            console.debug(`Atualizando data e status semanal do novo plantão ${plantaoAtual.name}`);
 
         } if (tipo === 2) {
             await Repository
                 .updatePlantao({ _id: plantaoAnterior._id }, { statusSabado: false }
                     , { upsert: true, new: true });
-            console.debug('Atualização do plantão anterior de sábado feita com sucesso!');
+            console.debug(`Atualizando status sabadal do plantão ${plantaoAnterior.name}`);
 
             await Repository
                 .updatePlantao(
                     { _id: plantaoAtual._id }, { escalaSabado: date, statusSabado: true }
                     , { upsert: true, new: true });
-            console.debug('Atualização do plantão atual de sábado feita com sucesso!');
+            console.debug(`Atualizando data e status sabadal do novo plantão ${plantaoAtual.name}`);
 
         } else if (tipo === 3) {
             await Repository
                 .updatePlantao({ _id: plantaoAnterior._id }, { statusDomingo: false }
                     , { upsert: true, new: true });
-            console.debug('Atualização do plantão anterior de domingo feita com sucesso!')
+            console.debug(`Atualizando status domingal do plantão ${plantaoAnterior.name}`);
 
             await Repository
                 .updatePlantao(
                     { _id: plantaoAtual._id }, { escalaDomingo: date, statusDomingo: true }
                     , { upsert: true, new: true });
-            console.debug('Atualização do plantão atual de domingo feita com sucesso!');
+            console.debug(`Atualizando data e status domingal do novo plantão ${plantaoAtual.name}`);
         }
 
     } catch (err) {
-        return ({ error: 'Error when trying to update plantão data' });
+        return ({ error: 'Ops surgiu um erro enquanto tentava atualizar os dados do plantão!' });
     }
 }
 
@@ -91,14 +105,14 @@ exports.proximoPlantao = async function () {
                     const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                     const tipoSemanal = 1;
                     this.atualizaDadosPlantao(plantao, proximoPlantao, tipoSemanal);
-                    console.info('Próximo plantão semanal definido com sucesso.');
+                    console.info('Próximo plantão semanal encontrado, passando dados para atualização...');
 
                 } else {
                     const numeroProximoPlantao = inicioGrupo;
                     const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                     const tipoSemanal = 1;
                     atualizaDadosPlantao(plantao, proximoPlantao, tipoSemanal);
-                    console.info('Próximo plantão inicial da semana definido com sucesso.');
+                    console.info('Plantão incial semanal encontrado, passando dados para atualização...');
                 }
             }
 
@@ -113,13 +127,13 @@ exports.proximoPlantao = async function () {
                     const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                     const tipoSabadal = 2;
                     atualizaDadosPlantao(plantao, proximoPlantao, tipoSabadal);
-                    console.info('Próximo plantão sabadal definido com sucesso.');
+                    console.info('Próximo plantão sabadal encontrado, passando dados para atualização...');
                 } else {
                     const numeroProximoPlantao = inicioGrupo;
                     const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                     const tipoSabadal = 2;
                     atualizaDadosPlantao(plantao, proximoPlantao, tipoSabadal);
-                    console.info('Próximo plantão sabadal definido com sucesso.');
+                    console.info('Plantão incial sabadal encontrado, passando dados para atualização...');
                 }
             }
         }
@@ -133,18 +147,18 @@ exports.proximoPlantao = async function () {
                 const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                 const tipoDomingal = 3;
                 atualizaDadosPlantao(plantao, proximoPlantao, tipoDomingal);
-                console.info('Próximo plantão domingal definido com sucesso.');
+                console.info('Próximo plantão domingal encontrado, passando dados para atualização...');
             } else {
                 const numeroProximoPlantao = inicioGrupo;
                 const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                 const tipoDomingal = 3
                 atualizaDadosPlantao(plantao, proximoPlantao, tipoDomingal);
-                console.info('Próximo plantão domingal definido com sucesso.');
+                console.info('Plantão incial domingal encontrado, passando dados para atualização...');
             }
         }
 
     } catch (err) {
-        return ({ error: 'Error when trying to set next Plantão' });
+        return ({ error: 'OPA! aconteceu um erro quando tentei encontrar o próximo plantão.' });
     }
 }
 exports.procuraPlantao = async () => {
@@ -158,8 +172,8 @@ exports.procuraPlantao = async () => {
 
         else return await Repository.getByStatusDomingal();
 
-    } catch (error) {
-        console.log(error);
+    } catch (err) {
+        return ({ error: 'EI! esbarrei em um erro quando tentei buscar o plantão pelo status.' });
     }
 }
 //Função devolve o plantão atual

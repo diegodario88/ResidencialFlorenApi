@@ -9,39 +9,44 @@ const verificaData = async (diaAtual) => {
 
     let diaPlantao = null;
 
+    //SEMANAL
     if (dia > 0 && dia < sabado) {
         result = await Repository.getByStatusSemanal();
         diaPlantao = result.escalaSemanal.getDate();
         if (diaAtual > diaPlantao) {
-            console.info('dia mudou para ' + diaAtual);
+            console.info(`O dia mudou para ${diaAtual}. Alteração do plantão em andamento...`);
+            console.info(`Plantão anterior: ${result.name} alterando para o próximo.`);
             plantaoService.proximoPlantao();
         }
-        return console.warn(`Dia do Plantão: ${diaPlantao} *** Dia atual: ${diaAtual}`);
+        return console.warn(`Dia do plantão: ${diaPlantao} *** Dia atual: ${diaAtual}`);
 
-    } else if (dia === sabado) {
+    } //SÁBADAL 
+    else if (dia === sabado) {
         result = await Repository.getByStatusSabadal();
         diaPlantao = result.escalaSabado.getDate();
-        if (diaAtual !== diaPlantao) {
-            console.info('dia mudou para ' + diaAtual);
-            console.warn(diaPlantao);
+        if (diaAtual > diaPlantao) {
+            console.info(`O dia mudou para ${diaAtual}. Alteração do plantão em andamento...`);
+            console.info(`Plantão anterior: ${result.name} alterando para o próximo.`);
             plantaoService.proximoPlantao();
         }
-        return console.info('dia continua o mesmo do plantão ' + diaPlantao);
+        return console.warn(`Dia do plantão: ${diaPlantao} *** Dia atual: ${diaAtual}`);
 
-    } else {
+    } //DOMINGAL
+    else {
         result = await Repository.getByStatusDomingal();
         diaPlantao = result.escalaDomingo.getDate();
-        if (diaAtual !== diaPlantao) {
-            console.info('dia mudou para ' + diaAtual);
-            console.warn(diaPlantao);
+        if (diaAtual > diaPlantao) {
+            console.info(`O dia mudou para ${diaAtual}. Alteração do plantão em andamento...`);
+            console.info(`Plantão anterior: ${result.name} alterando para o próximo.`);
             plantaoService.proximoPlantao();
         }
         return console.info('dia continua o mesmo do plantão ' + diaPlantao);
     }
 }
 
+//Definindo o intervalo
 const minutes = 1;
-const interval = minutes * 60 * 1000;
+const interval = minutes * 60 * 3000;
 
 (setInterval(function () {
     console.warn('Monitorando Data -->');

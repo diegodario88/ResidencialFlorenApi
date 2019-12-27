@@ -1,7 +1,7 @@
 {
   "name": "ResidencialFlorenApi",
   "version": "1.0.0",
-  "description": "",
+  "description": "API para automatização das farmácias de plantão.",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.js",

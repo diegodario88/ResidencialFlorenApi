@@ -4,17 +4,28 @@ const Farmacias = require('../models/farmacia')
 const Plantao = require('../models/plantao')
 
 exports.get = async () => {
-    const res = await Plantao
-        .find({})
-        .populate('farmacias', 'name endereco telefone');
-    return res;
+    try {
+        const result = await Plantao
+            .find({})
+            .populate('farmacias', 'name endereco telefone');
+        return result;
+
+    } catch (error) {
+        return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão!' });
+    }
 }
 
 exports.findByID = async (id) => {
-    const res = await Plantao
-        .findOne({ _id: id })
-        .populate('farmacias', 'name endereco telefone');
-    return res;
+    try {
+        const result = await Plantao
+            .findOne({ _id: id })
+            .populate('farmacias', 'name endereco telefone');
+        return result;
+
+    } catch (error) {
+        return ({ error: 'UPS!, não consegui encontrar um plantão pelo filtro ID.' });
+    }
+
 }
 
 exports.getOne = async (filter) => {
@@ -25,7 +36,7 @@ exports.getOne = async (filter) => {
         return res;
 
     } catch (err) {
-        return ({ error: 'Error cannot find plantão by filter' })
+        return ({ error: 'UPS!, não consegui encontrar um plantão pelo filtro informado.' });
     }
 }
 
@@ -37,7 +48,7 @@ exports.getByName = async (name) => {
         return res;
 
     } catch (err) {
-        return ({ error: 'Error cannot find plantão by name' })
+        return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo nome.' });
     }
 }
 exports.getByNumber = async (number) => {
@@ -49,7 +60,7 @@ exports.getByNumber = async (number) => {
         return res;
 
     } catch (err) {
-        return ({ error: 'Error cannot find plantão by name' })
+        return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo número.' });
     }
 }
 
@@ -58,12 +69,12 @@ exports.updatePlantao = async (filter, update, config) => {
         await Plantao
             .updateOne(filter, update, config);
 
-        return console.warn('Sucesso no update');
+        return console.warn('YES! Sucesso no update ... !');
 
     } catch (err) {
         console.log(err);
 
-        return ({ error: 'Error trying to update' })
+        return ({ error: 'OPA! OPA! deu ruim no update do plantão.' })
     }
 }
 
@@ -73,7 +84,7 @@ exports.getByStatusSemanal = async () => {
             .populate('farmacias', 'name endereco telefone')
             .where('statusSemanal').equals('true');
     } catch (error) {
-        return ({ error: 'Failure =(' })
+        return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo status Semanal.' });
     }
 }
 
@@ -83,7 +94,7 @@ exports.getByStatusSabadal = async () => {
             .populate('farmacias', 'name endereco telefone')
             .where('statusSabado').equals('true');
     } catch (error) {
-        return ({ error: 'Failure =(' })
+        return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo status Sabadal.' });
     }
 }
 
@@ -93,6 +104,6 @@ exports.getByStatusDomingal = async () => {
             .populate('farmacias', 'name endereco telefone')
             .where('statusDomingo').equals('true');
     } catch (error) {
-        return ({ error: 'Failure =(' })
+        return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo status Domingal.' });
     }
 }
