@@ -15,8 +15,8 @@
 </p>
 
 ### About
-Projetado para abstrair minimamente a lógica do banco de dados, esse modelo cria decisões comuns de design de API e permite distribuir rapidamente seus dados em formatos comuns, como JSON e CSV. 
-Isso serve para servir como um clichê para estabelecer rapidamente uma API para um sistema de banco de dados existente. 
+Projetado para abstrair minimamente a lógica do banco de dados, esse modelo cria decisões comuns de design de API e permite distribuir rapidamente seus dados em formatos comuns, como JSON. 
+Essa API alimenta o projeto FrontEnd ResidencialFloren, fornecendo as farmácias que estão de plantão através do endpoint /api/v1/plantoes/atual. 
 
 ### Features
 + Versioning
