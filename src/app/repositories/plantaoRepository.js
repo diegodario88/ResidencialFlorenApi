@@ -1,7 +1,8 @@
 'use strict';
-const mongoose = require('../../database/index')
+const mongoose = require('../../database/')
 const Farmacias = require('../models/farmacia')
 const Plantao = require('../models/plantao')
+
 
 exports.get = async () => {
     try {

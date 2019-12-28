@@ -1,4 +1,4 @@
-const mongoose = require('../../database/index');
+const mongoose = require('../../database/');
 
 const plantaoScheme = new mongoose.Schema({
     name: {

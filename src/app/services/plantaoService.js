@@ -1,5 +1,5 @@
 const Repository = require('../repositories/plantaoRepository');
-
+const ContadorRepo = require('../repositories/contadorRepository');
 function dataAtualFormatada() {
     Date.prototype.addHours = function (value) {
         this.setHours(this.getHours() + value);
@@ -96,63 +96,92 @@ exports.proximoPlantao = async function () {
 
         if (dia > 0 && dia < sabado) {
             //Semanal
+            const id = '5e06e91a1c9d440000ad44f0';
             const plantao = await Repository.getByStatusSemanal();
-            let contadorSemanal = plantao.numero;
+            let contadorSemanal = await ContadorRepo.findById(id);
 
             if (plantao.numero === contadorSemanal) {
                 if (contadorSemanal > 0 && contadorSemanal < ultimoGrupo) {
                     const numeroProximoPlantao = contadorSemanal + 1;
+                    await ContadorRepo
+                        .updateContador(id, numeroProximoPlantao, { upsert: true, new: true });
+
                     const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                     const tipoSemanal = 1;
+
                     this.atualizaDadosPlantao(plantao, proximoPlantao, tipoSemanal);
                     console.info('Próximo plantão semanal encontrado, passando dados para atualização...');
 
                 } else {
                     const numeroProximoPlantao = inicioGrupo;
+                    await ContadorRepo
+                        .updateContador(id, numeroProximoPlantao, { upsert: true, new: true });
+
                     const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                     const tipoSemanal = 1;
-                    atualizaDadosPlantao(plantao, proximoPlantao, tipoSemanal);
+
+                    this.atualizaDadosPlantao(plantao, proximoPlantao, tipoSemanal);
                     console.info('Plantão incial semanal encontrado, passando dados para atualização...');
                 }
             }
 
         } if (dia === sabado) {
             //Sábado
+            const id = '5e06e9571c9d440000ad44f1';
             const plantao = await Repository.getByStatusSabadal();
-            let contadorSabado = plantao.numero;
+            let contadorSabadal = await ContadorRepo.findById(id);
 
-            if (plantao.numero === contadorSabado) {
-                if (contadorSemanal > 0 && contadorSemanal < ultimoGrupo) {
-                    const numeroProximoPlantao = contadorSemanal + 1;
+            if (plantao.numero === contadorSabadal) {
+                if (contadorSabadal > 0 && contadorSabadal < ultimoGrupo) {
+                    const numeroProximoPlantao = contadorSabadal + 1;
+                    await ContadorRepo
+                        .updateContador(id, numeroProximoPlantao, { upsert: true, new: true });
+
                     const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                     const tipoSabadal = 2;
-                    atualizaDadosPlantao(plantao, proximoPlantao, tipoSabadal);
+
+                    this.atualizaDadosPlantao(plantao, proximoPlantao, tipoSabadal);
                     console.info('Próximo plantão sabadal encontrado, passando dados para atualização...');
+
                 } else {
                     const numeroProximoPlantao = inicioGrupo;
+                    await ContadorRepo
+                        .updateContador(id, numeroProximoPlantao, { upsert: true, new: true });
+
                     const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                     const tipoSabadal = 2;
-                    atualizaDadosPlantao(plantao, proximoPlantao, tipoSabadal);
+
+                    this.atualizaDadosPlantao(plantao, proximoPlantao, tipoSabadal);
                     console.info('Plantão incial sabadal encontrado, passando dados para atualização...');
                 }
             }
         }
         //Domingo
-        let contadorDomingo = plantao.numero;
+        const id = '5e06e97d1c9d440000ad44f2';
         const plantao = await Repository.getByStatusDomingal();
+        let contadorDomingal = await ContadorRepo.findById(id);
 
-        if (plantao.numero === contadorDomingo) {
-            if (contadorSemanal > 0 && contadorSemanal < ultimoGrupo) {
-                const numeroProximoPlantao = contadorSemanal + 1;
+        if (plantao.numero === contadorDomingal) {
+            if (contadorDomingal > 0 && contadorDomingal < ultimoGrupo) {
+                const numeroProximoPlantao = contadorDomingal + 1;
+                await ContadorRepo
+                    .updateContador(id, numeroProximoPlantao, { upsert: true, new: true });
+
                 const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                 const tipoDomingal = 3;
-                atualizaDadosPlantao(plantao, proximoPlantao, tipoDomingal);
+
+                this.atualizaDadosPlantao(plantao, proximoPlantao, tipoDomingal);
                 console.info('Próximo plantão domingal encontrado, passando dados para atualização...');
+
             } else {
                 const numeroProximoPlantao = inicioGrupo;
+                await ContadorRepo
+                    .updateContador(id, numeroProximoPlantao, { upsert: true, new: true });
+
                 const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
                 const tipoDomingal = 3
-                atualizaDadosPlantao(plantao, proximoPlantao, tipoDomingal);
+
+                this.atualizaDadosPlantao(plantao, proximoPlantao, tipoDomingal);
                 console.info('Plantão incial domingal encontrado, passando dados para atualização...');
             }
         }
