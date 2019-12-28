@@ -1,15 +1,15 @@
 const mongoose = require('../../database');
 
 const ContadorSchema = new mongoose.Schema({
-    contadorSemanal: {
+    nome: {
+        type: String,
+        require: false
+    },
+    iterador: {
         type: Number,
         require: false
     },
-    contadorSabadal: {
-        type: Number,
-        require: false
-    },
-    contadorDomingal: {
+    ciclo: {
         type: Number,
         require: false
     }
