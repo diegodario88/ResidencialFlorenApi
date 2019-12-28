@@ -8,10 +8,6 @@ const ContadorSchema = new mongoose.Schema({
     iterador: {
         type: Number,
         require: false
-    },
-    ciclo: {
-        type: Number,
-        require: false
     }
 
 });
