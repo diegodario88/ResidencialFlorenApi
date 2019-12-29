@@ -70,7 +70,7 @@ exports.updatePlantao = async (filter, update, config) => {
         await Plantao
             .updateOne(filter, update, config);
 
-        return console.warn('YES! Sucesso no update ... !');
+        return console.warn('YES! Sucesso no update... !');
 
     } catch (err) {
         console.log(err);

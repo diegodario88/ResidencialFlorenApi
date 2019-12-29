@@ -27,8 +27,9 @@ const verificaData = async (diaAtual) => {
             console.debug(`O dia mudou para ${diaAtual}. Alteração do plantão em andamento...`);
             console.debug(`Plantão anterior: ${plantaoAtual.name} alterando para o próximo.`);
             plantaoService.proximoPlantao(EscalaEnum.semanal, plantaoAtual);
+            return;
         }
-        return console.info(`Dia do plantão: ${diaPlantao} *** Dia atual: ${diaAtual}`);
+        console.info(`Dia do plantão: ${diaPlantao} *** Dia atual: ${diaAtual}`);
 
     } //SABADAL 
     else if (dia === sabado) {
@@ -38,8 +39,9 @@ const verificaData = async (diaAtual) => {
             console.debug(`O dia mudou para ${diaAtual}. Alteração do plantão em andamento...`);
             console.debug(`Plantão anterior: ${plantaoAtual.name} alterando para o próximo.`);
             plantaoService.proximoPlantao(EscalaEnum.sabadal, plantaoAtual);
+            return;
         }
-        return console.info(`Dia do plantão: ${diaPlantao} *** Dia atual: ${diaAtual}`);
+        console.info(`Dia do plantão: ${diaPlantao} *** Dia atual: ${diaAtual}`);
 
     } //DOMINGAL
     else {
@@ -49,14 +51,15 @@ const verificaData = async (diaAtual) => {
             console.debug(`O dia mudou para ${diaAtual}. Alteração do plantão em andamento...`);
             console.debug(`Plantão anterior: ${plantaoAtual.name} alterando para o próximo.`);
             plantaoService.proximoPlantao(EscalaEnum.domingal, plantaoAtual);
+            return;
         }
-        return console.info('dia continua o mesmo do plantão ' + diaPlantao);
+        console.info(`Dia do plantão: ${diaPlantao} *** Dia atual: ${diaAtual}`);
     }
 }
 
 //Definindo o intervalo
-const minutos = 1;
-const intervalo = minutos * 60 * 2000;
+const minutos = 2;
+const intervalo = minutos * 60 * 1000;
 
 setInterval(() => {
     console.warn('Monitorando Data -->');
