@@ -3,11 +3,7 @@ const Repository = require('../repositories/plantaoRepository');
 const plantaoService = require('../services/plantaoService');
 
 exports.diaAtualSemana = () => {
-    Date.prototype.addHours = function (value) {
-        this.setHours(this.getHours() + value);
-    }
     const date = new Date();
-    date.addHours(-3);
     return date.getDay();
 }
 

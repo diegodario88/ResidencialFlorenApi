@@ -96,13 +96,8 @@ exports.proximoPlantao = async function (escala, plantaoAtual) {
 exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, escala) {
 
     try {
-        //Corrigi data para UTC -3
-        Date.prototype.addHours = function (value) {
-            this.setHours(this.getHours() + value);
-        }
-        const date = new Date();
-        date.addHours(-3);
 
+        const date = new Date();
         console.log(`
             Atualizando dados --> 
             Data: ${date} 
