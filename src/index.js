@@ -20,9 +20,10 @@ const route = router.get('/', (req, res, next) => {
     })
 });
 
-require('./app/controllers/authController')(app);
+//require('./app/controllers/authController')(app);
 require('./app/controllers/farmaciaController')(app);
 require('./app/controllers/plantaoController')(app);
+require('./app/services/dataService')(app);
 
 
 app.listen(port);

@@ -1,5 +1,5 @@
 "use strict";
-const dataService = require('../services/dataService');
+const moment = require('moment');
 const Repository = require('../repositories/plantaoRepository');
 const ContadorRepository = require('../repositories/contadorRepository');
 
@@ -97,10 +97,10 @@ exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, es
 
     try {
 
-        const date = new Date();
+        const date = moment().utcOffset('-03:00');
         console.log(`
             Atualizando dados --> 
-            Data: ${date} 
+            Data: ${date.format('DD/MM/YYYY')} 
             Escala: ${escala}
             _____________
 
@@ -160,10 +160,11 @@ exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, es
 
 exports.procuraPlantao = async () => {
     try {
-        const dia = dataService.diaAtualSemana();
+        const dia = moment().utcOffset('-03:00').day();
         const sabado = 6;
+        const domingo = 0;
 
-        if (dia > 0 && dia < sabado) return await Repository.getByStatusSemanal();
+        if (dia > domingo && dia < sabado) return await Repository.getByStatusSemanal();
 
         if (dia === sabado) return await Repository.getByStatusSabadal();
 
