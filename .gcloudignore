@@ -12,6 +12,8 @@
 # below:
 .git
 .gitignore
+.vscode
+nodejs-cli-banner.png
 
 # Node.js dependencies:
 node_modules/
