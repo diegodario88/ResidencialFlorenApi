@@ -10,7 +10,7 @@ const intervalo = minutos * 60 * 1000;
 setInterval(() => {
     console.warn(`Monitorando Data --> 
     ${moment().utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A')}`);
-    monitoraData(moment().utcOffset('-03:00').date()).catch(console.warn);
+    monitoraData(moment().utcOffset('-03:00').format('DD/MM/YYYY')).catch(console.warn);
 }, intervalo);
 
 const monitoraData = async (diaAtual) => {
@@ -25,7 +25,7 @@ const monitoraData = async (diaAtual) => {
     //SEMANAL
     if (dia > domingo && dia < sabado) {
         plantaoAtual = await Repository.getByStatusSemanal();
-        diaPlantao = moment(plantaoAtual.escalaSemanal).utcOffset('-03:00').date();
+        diaPlantao = moment(plantaoAtual.escalaSemanal).utcOffset('-03:00').format('DD/MM/YYYY');
         if (diaAtual > diaPlantao) {
             console.debug(`O dia mudou para ${diaAtual}. Alteração do plantão em andamento...`);
             console.debug(`Plantão anterior: ${plantaoAtual.name} alterando para o próximo.`);
