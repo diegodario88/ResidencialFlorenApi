@@ -4,13 +4,14 @@ const plantaoService = require('../services/plantaoService');
 const moment = require('moment');
 
 //Definindo o intervalo
-const minutos = 3;
+const minutos = 120;
 const intervalo = minutos * 60 * 1000;
 
 setInterval(() => {
     console.warn(`Monitorando Data --> 
     ${moment().utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A')}`);
-    monitoraData(moment().utcOffset('-03:00').format('DD/MM/YYYY')).catch(console.warn);
+    const diaAtual = moment().utcOffset('-03:00').format('DD/MM/YYYY');
+    monitoraData(diaAtual).catch(console.warn);
 }, intervalo);
 
 const monitoraData = async (diaAtual) => {
@@ -27,8 +28,8 @@ const monitoraData = async (diaAtual) => {
         plantaoAtual = await Repository.getByStatusSemanal();
         diaPlantao = moment(plantaoAtual.escalaSemanal).utcOffset('-03:00').format('DD/MM/YYYY');
         if (diaAtual > diaPlantao) {
-            console.debug(`O dia mudou para ${diaAtual}. Alteração do plantão em andamento...`);
-            console.debug(`Plantão anterior: ${plantaoAtual.name} alterando para o próximo.`);
+            console.info(`O dia mudou para ${diaAtual}. Alteração do plantão em andamento...`);
+            console.info(`Plantão anterior: ${plantaoAtual.name} alterando para o próximo.`);
             plantaoService.proximoPlantao(EscalaEnum.semanal, plantaoAtual);
             return;
         }
@@ -60,5 +61,5 @@ const monitoraData = async (diaAtual) => {
     }
 }
 
-module.exports = app => app.use(monitoraData);
+module.exports = { monitoraData };
 
