@@ -4,12 +4,12 @@ const plantaoService = require('../services/plantaoService');
 const moment = require('moment');
 
 //Definindo o intervalo
-const minutos = 120;
+const minutos = 1;
 const intervalo = minutos * 60 * 1000;
 
 setInterval(() => {
-    console.warn(`Monitorando Data atual --> 
-    ${moment().utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A')}`);
+    console.warn(`Monitorando --> 
+    Data atual: ${moment().utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A')}`);
     const diaAtual = moment().utcOffset('-03:00');
     monitoraEscala(diaAtual).catch(console.warn);
 }, intervalo);
@@ -46,7 +46,7 @@ const verificaDataPlantao = (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => 
     const diaPlantao = moment(dataEscala)
         .utcOffset('-03:00');
 
-    if (diaAtual.year() > diaPlantao.year() && diaAtual.dayOfYear() > diaPlantao.dayOfYear()) {
+    if (diaAtual.year() > diaPlantao.year() || diaAtual.dayOfYear() > diaPlantao.dayOfYear()) {
         //Troca plantão
         logInfo(plantaoAtual.name, diaAtual)
         return plantaoService.proximoPlantao(EscalaEnum, plantaoAtual);
