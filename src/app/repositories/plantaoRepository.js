@@ -65,17 +65,17 @@ exports.getByNumber = async (number) => {
     }
 }
 
-exports.updatePlantao = async (filter, update, config) => {
+exports.updatePlantao = async (filter, update) => {
     try {
         await Plantao
-            .updateOne(filter, update, config);
+            .updateOne(filter, update);
 
-        return console.warn('YES! Sucesso no update... !');
+        return console.warn('Plantão updated succefully');
 
     } catch (err) {
         console.log(err);
 
-        return ({ error: 'OPA! OPA! deu ruim no update do plantão.' })
+        return ({ error: 'Something bad happened on updatePlantão service' })
     }
 }
 

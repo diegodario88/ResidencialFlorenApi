@@ -13,15 +13,15 @@ exports.findById = async (id) => {
 }
 
 //Atualiza o contador
-exports.updateContador = async (filter, update, config) => {
+exports.updateCounter = async (filter, update) => {
     try {
         await Contador
-            .updateOne(filter, update, config);
+            .updateOne(filter, update);
 
-        return console.warn('YES! Sucesso no update do contador ... !');
+        return console.warn('Counter updated succefully');
 
     } catch (err) {
         console.log(err);
-        return ({ error: 'OPA! OPA! deu ruim no update do contador.' })
+        return ({ error: 'Something went wrong in updateCounter' })
     }
 }

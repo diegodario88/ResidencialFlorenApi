@@ -7,7 +7,7 @@ const router = express.Router();
 //Lista plantão atual
 router.get('/atual', async (req, res) => {
     try {
-        const data = await plantaoService.procuraPlantao();
+        const data = await plantaoService.getCurrentGroup();
         const plantaoAtual = new Plantao(data);
         res.status(200).send(plantaoAtual);
 

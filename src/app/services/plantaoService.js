@@ -1,152 +1,93 @@
-"use strict";
+
 const moment = require('moment');
 const Repository = require('../repositories/plantaoRepository');
-const ContadorRepository = require('../repositories/contadorRepository');
+const CounterRepository = require('../repositories/contadorRepository');
 
-exports.proximoPlantao = async function (escala, plantaoAtual) {
+TODO: //refatorar esse serviço
+
+function getCounter(type) {
+    return ({
+        weekendDay: '5e06e91a1c9d440000ad44f0',
+        saturday: '5e06e9571c9d440000ad44f1',
+        sunday: '5e06e97d1c9d440000ad44f2'
+    }[type] || 'ID not found')
+};
+
+
+async function getIterator(type) {
     try {
+        const { iterador } =
+            ({
+                weekendDay: await CounterRepository.findById(getCounter('weekendDay')),
+                saturday: await CounterRepository.findById(getCounter('saturday')),
+                sunday: await CounterRepository.findById(getCounter('sunday'))
+            })[type]
 
-        const GrupoEnum = Object.freeze({ "inicioGrupo": 1, "ultimoGrupo": 13 })
+        return iterador;
 
-        switch (escala) {
-            case 1:
-                //Semanal
-                const idSemanal = '5e06e91a1c9d440000ad44f0';
-                const resultSemanal = await ContadorRepository.findById(idSemanal);
-                const contadorSemanal = resultSemanal.iterador;
+    } catch (error) {
+        return ({ err: ' Cannot find type' })
+    }
+};
 
-                if (contadorSemanal < GrupoEnum.ultimoGrupo) {
-                    const numeroProximoPlantao = contadorSemanal + 1;
-                    await ContadorRepository
-                        .updateContador({ _id: idSemanal }, { iterador: numeroProximoPlantao }, { upsert: true, new: true });
+async function updateCounter(type) {
+    const Enum = Object.freeze({ "startGroup": 1, "endGroup": 13 })
+    const iterator = await getIterator(type)
+    try {
+        if (iterator < Enum.endGroup) {
+            const nextGroup = iterator + 1;
+            await CounterRepository
+                .updateCounter({ _id: getCounter(type) }, { iterador: nextGroup });
+            return nextGroup;
 
-                    const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
-                    console.debug('Próximo plantão semanal encontrado, passando dados para atualização...');
-                    this.atualizaDadosPlantao(plantaoAtual, proximoPlantao, escala);
-
-                } else {
-                    await ContadorRepository
-                        .updateContador({ _id: idSemanal }, { iterador: GrupoEnum.inicioGrupo }, { upsert: true, new: true });
-
-                    const proximoPlantao = await Repository.getByNumber(GrupoEnum.inicioGrupo);
-                    console.debug('Plantão incial semanal encontrado, passando dados para atualização...');
-                    this.atualizaDadosPlantao(plantaoAtual, proximoPlantao, escala);
-
-                }
-
-                break;
-            case 2:
-                //Sábado
-                const idSabadal = '5e06e9571c9d440000ad44f1';
-                let resultSabadal = await ContadorRepository.findById(idSabadal);
-                let contadorSabadal = resultSabadal.iterador;
-
-                if (contadorSabadal < GrupoEnum.ultimoGrupo) {
-                    const numeroProximoPlantao = contadorSabadal + 1;
-                    await ContadorRepository
-                        .updateContador({ _id: idSabadal }, { iterador: numeroProximoPlantao }, { upsert: true, new: true });
-
-                    const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
-                    console.info('Próximo plantão sabadal encontrado, passando dados para atualização...');
-                    this.atualizaDadosPlantao(plantaoAtual, proximoPlantao, escala);
-
-                } else {
-                    await ContadorRepository
-                        .updateContador({ _id: idSabadal }, { iterador: GrupoEnum.inicioGrupo }, { upsert: true, new: true });
-
-                    const proximoPlantao = await Repository.getByNumber(GrupoEnum.inicioGrupo);
-                    console.info('Plantão incial sabadal encontrado, passando dados para atualização...');
-                    this.atualizaDadosPlantao(plantaoAtual, proximoPlantao, escala);
-                }
-                break;
-
-            case 3:
-                //Domingo
-                const idDomingal = '5e06e97d1c9d440000ad44f2';
-                let resultDomingal = await ContadorRepository.findById(idDomingal);
-                let contadorDomingal = resultDomingal.iterador;
-
-                if (contadorDomingal < GrupoEnum.ultimoGrupo) {
-                    const numeroProximoPlantao = contadorDomingal + 1;
-                    await ContadorRepository
-                        .updateContador({ _id: idDomingal }, { iterador: numeroProximoPlantao }, { upsert: true, new: true });
-
-                    const proximoPlantao = await Repository.getByNumber(numeroProximoPlantao);
-                    console.info('Próximo plantão domingal encontrado, passando dados para atualização...');
-                    this.atualizaDadosPlantao(plantaoAtual, proximoPlantao, escala);
-
-                } else {
-                    await ContadorRepository
-                        .updateContador({ _id: idDomingal }, { iterador: GrupoEnum.inicioGrupo }, { upsert: true, new: true });
-
-                    const proximoPlantao = await Repository.getByNumber(GrupoEnum.inicioGrupo);
-                    console.info('Plantão incial domingal encontrado, passando dados para atualização...');
-                    this.atualizaDadosPlantao(plantaoAtual, proximoPlantao, escala);
-                }
-                break;
-
-            default:
-                break;
+        } else {
+            await CounterRepository
+                .updateCounter({ _id: getCounter(type) }, { iterador: Enum.startGroup });
+            return Enum.startGroup;
         }
 
-    } catch (err) {
-        return ({ error: 'OPA! aconteceu um erro quando tentei encontrar o próximo plantão.' });
+    } catch (error) {
+        return ({ err: 'Cannot update counter with your type' })
     }
+
 }
-exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, escala) {
+
+async function updateGroupData(plantaoAnterior, plantaoAtual, escala) {
 
     try {
-
         const date = moment().utcOffset('-03:00');
         console.log(`
             Atualizando dados --> 
             Data: ${date.format('DD/MM/YYYY')} 
             Escala: ${escala}
             _____________
-
             Plantão anterior: ${plantaoAnterior.name}
             Plantão atual: ${plantaoAtual.name}
-       
             `);
 
         switch (escala) {
             case 1:
-                console.debug(`Atualizando status semanal do plantão anterior ${plantaoAnterior.name}`);
                 await Repository
-                    .updatePlantao({ _id: plantaoAnterior._id }, { statusSemanal: false }
-                        , { upsert: true, new: true });
-
-                console.debug(`Atualizando data e status semanal do novo plantão ${plantaoAtual.name}`);
+                    .updatePlantao({ _id: plantaoAnterior._id }, { statusSemanal: false });
                 await Repository
                     .updatePlantao(
-                        { _id: plantaoAtual._id }, { escalaSemanal: date, statusSemanal: true }
-                        , { upsert: true, new: true });
+                        { _id: plantaoAtual._id }, { escalaSemanal: date, statusSemanal: true });
                 break;
 
             case 2:
-                console.debug(`Atualizando status sabadal do plantão anterior ${plantaoAnterior.name}`);
                 await Repository
-                    .updatePlantao({ _id: plantaoAnterior._id }, { statusSabado: false }
-                        , { upsert: true, new: true });
-
-                console.debug(`Atualizando data e status sabadal do novo plantão ${plantaoAtual.name}`);
+                    .updatePlantao({ _id: plantaoAnterior._id }, { statusSabado: false });
                 await Repository
                     .updatePlantao(
-                        { _id: plantaoAtual._id }, { escalaSabado: date, statusSabado: true }
-                        , { upsert: true, new: true });
+                        { _id: plantaoAtual._id }, { escalaSabado: date, statusSabado: true });
                 break;
 
             case 3:
-                console.debug(`Atualizando status domingal do plantão anterior ${plantaoAnterior.name}`);
                 await Repository
-                    .updatePlantao({ _id: plantaoAnterior._id }, { statusDomingo: false }
-                        , { upsert: true, new: true });
-
-                console.debug(`Atualizando data e status domingal do novo plantão ${plantaoAtual.name}`);
+                    .updatePlantao({ _id: plantaoAnterior._id }, { statusDomingo: false });
                 await Repository
                     .updatePlantao(
-                        { _id: plantaoAtual._id }, { escalaDomingo: date, statusDomingo: true }
-                        , { upsert: true, new: true });
+                        { _id: plantaoAtual._id }, { escalaDomingo: date, statusDomingo: true });
                 break;
 
             default:
@@ -154,23 +95,57 @@ exports.atualizaDadosPlantao = async function (plantaoAnterior, plantaoAtual, es
         }
 
     } catch (err) {
-        return ({ error: 'Ops surgiu um erro enquanto tentava atualizar os dados do plantão!' });
+        return err;
     }
 }
 
-exports.procuraPlantao = async () => {
+exports.getNextGroup = async function (escala, plantaoAtual) {
     try {
-        const dia = moment().utcOffset('-03:00').day();
-        const sabado = 6;
-        const domingo = 0;
 
-        if (dia > domingo && dia < sabado) return await Repository.getByStatusSemanal();
+        let nextGroup = null;
 
-        if (dia === sabado) return await Repository.getByStatusSabadal();
+        switch (escala) {
+            case 1:
+                //WeekendDay
+                nextGroup = await Repository.getByNumber(await updateCounter('weekendDay'));
+                break;
 
-        else return await Repository.getByStatusDomingal();
+            case 2:
+                //Saturday
+                nextGroup = await Repository.getByNumber(await updateCounter('saturday'));
+                break;
+
+            case 3:
+                //Sunday
+                nextGroup = await Repository.getByNumber(await updateCounter('sunday'));
+                break;
+
+            default:
+                break;
+        }
+
+        if (nextGroup != undefined) {
+            return updateGroupData(plantaoAtual, nextGroup, escala);
+        } throw 'error nextgroup is null or undefined'
+
 
     } catch (err) {
-        return ({ error: 'EI! esbarrei em um erro quando tentei buscar o plantão pelo status.' });
+        return ({ error: 'Ups! Something went wrong in nextGroup service' });
     }
 }
+
+
+exports.getCurrentGroup = () => {
+
+    const dia = moment().utcOffset('-03:00').day();
+    const sabado = 6;
+    const domingo = 0;
+
+    if (dia > domingo && dia < sabado) return Repository.getByStatusSemanal();
+
+    if (dia === sabado) return Repository.getByStatusSabadal();
+
+    else return Repository.getByStatusDomingal();
+
+}
+
