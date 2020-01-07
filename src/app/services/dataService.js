@@ -19,8 +19,7 @@ const monitorThread = async (diaAtual) => {
     const EscalaEnum = Object.freeze({ "semanal": 1, "sabadal": 2, "domingal": 3, })
     let plantaoAtual = null;
     const dia = diaAtual.day();
-    const sabado = 6;
-    const domingo = 0;
+    const sabado = 6, domingo = 0;
 
     //SEMANAL
     if (dia > domingo && dia < sabado) {

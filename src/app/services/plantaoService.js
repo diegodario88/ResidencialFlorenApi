@@ -3,8 +3,6 @@ const moment = require('moment');
 const Repository = require('../repositories/plantaoRepository');
 const CounterRepository = require('../repositories/contadorRepository');
 
-TODO: //refatorar esse serviço
-
 function getCounter(type) {
     return ({
         weekendDay: '5e06e91a1c9d440000ad44f0',
@@ -12,7 +10,6 @@ function getCounter(type) {
         sunday: '5e06e97d1c9d440000ad44f2'
     }[type] || 'ID not found')
 };
-
 
 async function getIterator(type) {
     try {
@@ -124,28 +121,24 @@ exports.getNextGroup = async function (escala, plantaoAtual) {
                 break;
         }
 
-        if (nextGroup != undefined) {
-            return updateGroupData(plantaoAtual, nextGroup, escala);
-        } throw 'error nextgroup is null or undefined'
-
+        nextGroup != undefined ? updateGroupData(plantaoAtual, nextGroup, escala)
+            : console.error('Next Group is undefined');
 
     } catch (err) {
-        return ({ error: 'Ups! Something went wrong in nextGroup service' });
+        return ({ error: 'Ups! Something went wrong in nextGroup service' }, err);
     }
 }
-
 
 exports.getCurrentGroup = () => {
 
     const dia = moment().utcOffset('-03:00').day();
-    const sabado = 6;
-    const domingo = 0;
+    const sabado = 6, domingo = 0;
 
     if (dia > domingo && dia < sabado) return Repository.getByStatusSemanal();
 
     if (dia === sabado) return Repository.getByStatusSabadal();
 
-    else return Repository.getByStatusDomingal();
+    return Repository.getByStatusDomingal();
 
 }
 
