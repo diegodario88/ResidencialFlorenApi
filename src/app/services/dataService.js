@@ -2,17 +2,18 @@
 const Repository = require('../repositories/plantaoRepository');
 const plantaoService = require('../services/plantaoService');
 const moment = require('moment');
+const twitterService = require('./twitterService')
 
 //Definindo o intervalo
-const minutos = 120;
-const intervalo = minutos * 60 * 1000;
+const minutes = 120;
+const interval = minutes * 60 * 1000;
 
 setInterval(() => {
     console.warn(`Monitorando --> 
     Data atual: ${moment().utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A')}`);
     const diaAtual = moment().utcOffset('-03:00');
     monitorThread(diaAtual).catch(console.warn);
-}, intervalo);
+}, interval);
 
 const monitorThread = async (diaAtual) => {
 
@@ -49,8 +50,19 @@ const checkDate = (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
         logInfo(plantaoAtual.name, diaAtual)
         return plantaoService.getNextGroup(EscalaEnum, plantaoAtual);
     }
+
     console.info(`Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`);
 
+    if (diaAtual.hours() > 18 && diaAtual.hours() <= 21) {
+        postTweet(plantaoAtual);
+    }
+}
+
+const postTweet = (plantaoAtual) => {
+    let mainPharmacy = plantaoAtual.farmacias[0].name;
+    let secPharmacy = plantaoAtual.farmacias[1].name;
+    const tweet = `Plantão hoje ${mainPharmacy} e ${secPharmacy}`;
+    twitterService.makeTweet(tweet);
 }
 
 const logInfo = (name, diaAtual) => {
