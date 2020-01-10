@@ -53,15 +53,22 @@ const checkDate = (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
 
     console.info(`Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`);
 
-    if (diaAtual.hours() > 18 && diaAtual.hours() <= 21) {
+    if (diaAtual.hours() >= 18 && diaAtual.hours() <= 21) {
         postTweet(plantaoAtual);
     }
 }
 
 const postTweet = (plantaoAtual) => {
-    let mainPharmacy = plantaoAtual.farmacias[0].name;
-    let secPharmacy = plantaoAtual.farmacias[1].name;
-    const tweet = `Plantão hoje ${mainPharmacy} e ${secPharmacy}`;
+    const tweet = `📢 Plantão hoje:
+     ${plantaoAtual.farmacias[0].name}
+     🏥 ${plantaoAtual.farmacias[0].endereco}
+     📞 ${plantaoAtual.farmacias[0].telefone}
+     _______________________________________
+     ${plantaoAtual.farmacias[1].name}
+     🏥 ${plantaoAtual.farmacias[1].endereco}
+     📞 ${plantaoAtual.farmacias[1].telefone}
+     #FlorenAPI`;
+
     twitterService.makeTweet(tweet);
 }
 
