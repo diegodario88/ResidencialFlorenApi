@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "moment": "^2.24.0",
     "mongoose": "^5.7.12",
+    "puppeteer": "^2.0.0",
     "twit": "^2.2.11"
   },
   "devDependencies": {

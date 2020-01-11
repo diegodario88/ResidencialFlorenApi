@@ -1,8 +1,8 @@
 const Twit = require('twit');
+const fs = require('fs');
 require("dotenv").config();
 
-
-exports.makeTweet = (tweet) => {
+exports.makeTweet = (tweet, altText) => {
 
     const twitter = new Twit({
         consumer_key: process.env.TWITTER_API_KEY,
@@ -11,9 +11,8 @@ exports.makeTweet = (tweet) => {
         access_token_secret: process.env.TOKEN_SECRET
     });
 
-    const message = {
-        status: tweet
-    }
+
+    const b64content = fs.readFileSync('src/app/services/puppeteer/floren.png', { encoding: 'base64' });
 
     const tweeted = (err, data, response) => {
         if (err) {
@@ -22,7 +21,23 @@ exports.makeTweet = (tweet) => {
         console.log('Twitter works!')
     }
 
-    return twitter.post('statuses/update', message, tweeted)
+    //Upload Media
+    const uploaded = (err, data, response) => {
+        const mediaIdStr = data.media_id_string;
+        const meta_params = { media_id: mediaIdStr, alt_text: { text: altText } };
+
+        twitter.post('media/metadata/create', meta_params, (err, data, response) => {
+            if (!err) {
+                //Reference the media and post a tweet (media will attach to the tweet)
+                const params = { tweet, media_ids: [mediaIdStr] }
+
+                twitter.post('statuses/update', params, tweeted)
+            }
+        })
+
+    }
+
+    return twitter.post('media/upload', { media_data: b64content }, uploaded);
 
 }
 

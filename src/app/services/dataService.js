@@ -2,7 +2,8 @@
 const Repository = require('../repositories/plantaoRepository');
 const plantaoService = require('../services/plantaoService');
 const moment = require('moment');
-const twitterService = require('./twitterService')
+const twitterService = require('./twitterService');
+const puppeteerService = require('./puppeteer/puppeteer');
 
 //Definindo o intervalo
 const minutes = 120;
@@ -21,6 +22,7 @@ const monitorThread = async (diaAtual) => {
     let plantaoAtual = null;
     const dia = diaAtual.day();
     const sabado = 6, domingo = 0;
+    await puppeteerService.takeScreenShot();
 
     //SEMANAL
     if (dia > domingo && dia < sabado) {
@@ -59,17 +61,12 @@ const checkDate = (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
 }
 
 const postTweet = (plantaoAtual) => {
-    const tweet = `📢 Plantão hoje:
-     ${plantaoAtual.farmacias[0].name}
-     🏥 ${plantaoAtual.farmacias[0].endereco}
-     📞 ${plantaoAtual.farmacias[0].telefone}
-     _______________________________________
-     ${plantaoAtual.farmacias[1].name}
-     🏥 ${plantaoAtual.farmacias[1].endereco}
-     📞 ${plantaoAtual.farmacias[1].telefone}
-     #FlorenAPI`;
 
-    twitterService.makeTweet(tweet);
+    const tweet = { status: '📢 Plantão hoje #FlorenAPI' };
+    const altTtext = `${plantaoAtual.farmacias[0].name}
+    ${plantaoAtual.farmacias[1].name}`;
+
+    twitterService.makeTweet(tweet, altTtext);
 }
 
 const logInfo = (name, diaAtual) => {
