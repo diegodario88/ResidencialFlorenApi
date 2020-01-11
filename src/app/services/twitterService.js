@@ -2,7 +2,7 @@ const Twit = require('twit');
 const fs = require('fs');
 require("dotenv").config();
 
-exports.makeTweet = (tweet, altText) => {
+exports.makeTweet = (altText) => {
 
     const twitter = new Twit({
         consumer_key: process.env.TWITTER_API_KEY,
@@ -29,7 +29,7 @@ exports.makeTweet = (tweet, altText) => {
         twitter.post('media/metadata/create', meta_params, (err, data, response) => {
             if (!err) {
                 //Reference the media and post a tweet (media will attach to the tweet)
-                const params = { tweet, media_ids: [mediaIdStr] }
+                const params = { status: '📢 Plantão hoje #FlorenAPI', media_ids: [mediaIdStr] }
 
                 twitter.post('statuses/update', params, tweeted)
             }

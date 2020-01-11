@@ -22,7 +22,6 @@ const monitorThread = async (diaAtual) => {
     let plantaoAtual = null;
     const dia = diaAtual.day();
     const sabado = 6, domingo = 0;
-    await puppeteerService.takeScreenShot();
 
     //SEMANAL
     if (dia > domingo && dia < sabado) {
@@ -44,7 +43,7 @@ const monitorThread = async (diaAtual) => {
     }
 }
 
-const checkDate = (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
+const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
     const diaPlantao = moment(dataEscala).utcOffset('-03:00');
 
     if (diaAtual.year() > diaPlantao.year() || diaAtual.dayOfYear() > diaPlantao.dayOfYear()) {
@@ -56,17 +55,23 @@ const checkDate = (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
     console.info(`Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`);
 
     if (diaAtual.hours() >= 18 && diaAtual.hours() <= 21) {
+
+        await puppeteerService.takeScreenShot();
+        await timeout(1000);
         postTweet(plantaoAtual);
     }
 }
 
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 const postTweet = (plantaoAtual) => {
 
-    const tweet = { status: '📢 Plantão hoje #FlorenAPI' };
     const altTtext = `${plantaoAtual.farmacias[0].name}
     ${plantaoAtual.farmacias[1].name}`;
 
-    twitterService.makeTweet(tweet, altTtext);
+    twitterService.makeTweet(altTtext);
 }
 
 const logInfo = (name, diaAtual) => {

@@ -1,5 +1,9 @@
 const puppeteer = require('puppeteer');
 
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 exports.takeScreenShot = async () => {
 
     const browser = await puppeteer.launch();
@@ -24,10 +28,8 @@ exports.takeScreenShot = async () => {
     });
 
     await page.goto(url);
-
-    setTimeout(async () => {
-        await page.screenshot(options);
-        await browser.close();
-    }, 1000);
+    await timeout(1200);
+    await page.screenshot(options);
+    await browser.close();
 
 };
