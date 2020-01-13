@@ -3,7 +3,7 @@ const Repository = require('../repositories/plantaoRepository');
 const plantaoService = require('../services/plantaoService');
 const moment = require('moment');
 const twitterService = require('./twitterService');
-const puppeteerService = require('./puppeteer/puppeteer');
+const printService = require('./API-Flash/printService');
 
 //Definindo o intervalo
 const minutes = 120;
@@ -15,6 +15,10 @@ setInterval(() => {
     const diaAtual = moment().utcOffset('-03:00');
     monitorThread(diaAtual).catch(console.warn);
 }, interval);
+
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
 
 const monitorThread = async (diaAtual) => {
 
@@ -55,16 +59,11 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
     console.info(`Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`);
 
     if (diaAtual.hours() >= 18 && diaAtual.hours() <= 21) {
-
-        await puppeteerService.takeScreenShot();
-        await timeout(1000);
+        printService.printScrenn();
+        await timeout(1200);
         postTweet(plantaoAtual);
     }
 }
-
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
 
 const postTweet = (plantaoAtual) => {
 

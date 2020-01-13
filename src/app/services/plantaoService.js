@@ -5,7 +5,7 @@ const CounterRepository = require('../repositories/contadorRepository');
 
 function getCounter(type) {
     return ({
-        weekendDay: '5e06e91a1c9d440000ad44f0',
+        weekDay: '5e06e91a1c9d440000ad44f0',
         saturday: '5e06e9571c9d440000ad44f1',
         sunday: '5e06e97d1c9d440000ad44f2'
     }[type] || 'ID not found')
@@ -15,7 +15,7 @@ async function getIterator(type) {
     try {
         const { iterador } =
             ({
-                weekendDay: await CounterRepository.findById(getCounter('weekendDay')),
+                weekDay: await CounterRepository.findById(getCounter('weekDay')),
                 saturday: await CounterRepository.findById(getCounter('saturday')),
                 sunday: await CounterRepository.findById(getCounter('sunday'))
             })[type]
@@ -103,8 +103,8 @@ exports.getNextGroup = async function (escala, plantaoAtual) {
 
         switch (escala) {
             case 1:
-                //WeekendDay
-                nextGroup = await Repository.getByNumber(await updateCounter('weekendDay'));
+                //WeekDay
+                nextGroup = await Repository.getByNumber(await updateCounter('weekDay'));
                 break;
 
             case 2:
