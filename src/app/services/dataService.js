@@ -6,7 +6,7 @@ const twitterService = require('./twitterService');
 const printService = require('./API-Flash/printService');
 
 //Definindo o intervalo
-const minutes = 1;
+const minutes = 120;
 const interval = minutes * 60 * 1000;
 
 setInterval(() => {
@@ -58,7 +58,7 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
 
     console.info(`Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`);
 
-    if (diaAtual.hours() >= 18 || diaAtual.hours() <= 21) {
+    if (diaAtual.hours() >= 18 && diaAtual.hours() <= 21) {
         printService.printScrenn();
         await timeout(1200);
         postTweet(plantaoAtual);
