@@ -15,8 +15,8 @@ exports.printScrenn = () => {
         if (error) {
             console.log(error);
         } else {
-            fs.writeFile('src/app/services/API-Flash/floren.png', body, "binary", error => {
-                console.log(error);
+            fs.writeFile('/tmp/floren.png', body, "binary", function (err, result) {
+                if (err) console.log('error', err);
             });
         }
     })

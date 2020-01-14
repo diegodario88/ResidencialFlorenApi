@@ -12,7 +12,7 @@ exports.makeTweet = (altText) => {
     });
 
 
-    const b64content = fs.readFileSync('src/app/services/API-Flash/floren.png', { encoding: 'base64' });
+    const b64content = fs.readFileSync('/tmp/floren.png', { encoding: 'base64' });
 
     const tweeted = (err, data, response) => {
         if (err) {
