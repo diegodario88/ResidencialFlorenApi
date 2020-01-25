@@ -16,10 +16,6 @@ setInterval(() => {
     monitorThread(diaAtual).catch(console.warn);
 }, interval);
 
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-
 const monitorThread = async (diaAtual) => {
 
     const EscalaEnum = Object.freeze({ "semanal": 1, "sabadal": 2, "domingal": 3, })
@@ -53,14 +49,16 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
     if (diaAtual.year() > diaPlantao.year() || diaAtual.dayOfYear() > diaPlantao.dayOfYear()) {
         //Troca plantão
         logInfo(plantaoAtual.name, diaAtual)
-        return plantaoService.getNextGroup(EscalaEnum, plantaoAtual);
+
+        plantaoService.getNextGroup(EscalaEnum, plantaoAtual);
+        printService.printScrenn();
+
+        return
     }
 
     console.info(`Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`);
 
     if (diaAtual.hours() >= 18 && diaAtual.hours() <= 21) {
-        printService.printScrenn();
-        await timeout(1200);
         postTweet(plantaoAtual);
     }
 }

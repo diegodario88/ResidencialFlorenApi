@@ -11,9 +11,12 @@ exports.makeTweet = (altText) => {
         access_token_secret: process.env.TOKEN_SECRET
     });
 
-
     const b64content = fs.readFileSync('/tmp/floren.png', { encoding: 'base64' });
 
+    if (!b64content) {
+        return console.log('empty file/directory');
+
+    }
     const tweeted = (err, data, response) => {
         if (err) {
             console.log('Something went wrong on tweets')
