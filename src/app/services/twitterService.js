@@ -11,12 +11,6 @@ exports.makeTweet = (altText) => {
         access_token_secret: process.env.TOKEN_SECRET
     });
 
-    const b64content = fs.readFileSync('/tmp/floren.png', { encoding: 'base64' });
-
-    if (!b64content) {
-        return console.log('empty file/directory');
-
-    }
     const tweeted = (err, data, response) => {
         if (err) {
             console.log('Something went wrong on tweets')
@@ -24,23 +18,33 @@ exports.makeTweet = (altText) => {
         console.log('Twitter works!')
     }
 
-    //Upload Media
-    const uploaded = (err, data, response) => {
-        const mediaIdStr = data.media_id_string;
-        const meta_params = { media_id: mediaIdStr, alt_text: { text: altText } };
+    try {
+        const dir = fs.openSync('/tmp/floren.png', 'r')
+        const b64content = fs.readFileSync(dir, { encoding: 'base64' });
+        fs.closeSync(dir)
 
-        twitter.post('media/metadata/create', meta_params, (err, data, response) => {
-            if (!err) {
-                //Reference the media and post a tweet (media will attach to the tweet)
-                const params = { status: '📢 Plantão hoje #FlorenAPI', media_ids: [mediaIdStr] }
+        //Upload Media
+        const uploaded = (err, data, response) => {
+            const mediaIdStr = data.media_id_string;
+            const meta_params = { media_id: mediaIdStr, alt_text: { text: altText } };
 
-                twitter.post('statuses/update', params, tweeted)
-            }
-        })
+            twitter.post('media/metadata/create', meta_params, (err, data, response) => {
+                if (!err) {
+                    //Reference the media and post a tweet (media will attach to the tweet)
+                    const params = { status: '📢 Plantão hoje #FlorenAPI', media_ids: [mediaIdStr] }
+
+                    twitter.post('statuses/update', params, tweeted)
+                }
+            })
+
+        }
+
+        twitter.post('media/upload', { media_data: b64content }, uploaded);
+
+    } catch (error) {
+        console.log(err);
 
     }
-
-    return twitter.post('media/upload', { media_data: b64content }, uploaded);
 
 }
 

@@ -51,9 +51,7 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
         logInfo(plantaoAtual.name, diaAtual)
 
         plantaoService.getNextGroup(EscalaEnum, plantaoAtual);
-        printService.printScrenn();
-
-        return
+        return printService.printScrenn();
     }
 
     console.info(`Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`);
