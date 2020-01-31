@@ -9,6 +9,10 @@ const printService = require('./API-Flash/printService');
 const minutes = 120;
 const interval = minutes * 60 * 1000;
 
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 setInterval(() => {
     console.warn(`Monitorando --> 
     Data atual: ${moment().utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A')}`);
@@ -51,7 +55,9 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
         logInfo(plantaoAtual.name, diaAtual)
 
         plantaoService.getNextGroup(EscalaEnum, plantaoAtual);
-        return printService.printScrenn();
+        await timeout(1200);
+        printService.printScrenn();
+        return
     }
 
     console.info(`Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`);
