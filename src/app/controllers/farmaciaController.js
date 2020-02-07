@@ -1,19 +1,18 @@
-const express = require('express');
+const express = require('express')
 const Farmacia = require('../models/farmacia')
 
-const router = express.Router();
+const router = express.Router()
 
-//Lista todos
+// Lista todos
 router.get('/', async (req, res) => {
-    try {
-        const listaFarmacia = await Farmacia.find();
+  try {
+    const listaFarmacia = await Farmacia.find()
 
-        return res.send({ listaFarmacia });
+    return res.send({ listaFarmacia })
+  } catch (err) {
+    return res.status(400).send({ error: 'Error loading farmácias.' })
+  }
+})
 
-    } catch (err) {
-        return res.status(400).send({ error: 'Error loading farmácias.' })
-    }
-});
 
-
-module.exports = app => app.use('/api/v1/farmacias', router);
+module.exports = (app) => app.use('/api/v1/farmacias', router)

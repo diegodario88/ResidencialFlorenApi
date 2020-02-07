@@ -1,17 +1,17 @@
-const mongoose = require('../../database');
+const mongoose = require('../../database')
 
 const ContadorSchema = new mongoose.Schema({
-    nome: {
-        type: String,
-        require: false
-    },
-    iterador: {
-        type: Number,
-        require: false
-    }
+  nome: {
+    type: String,
+    require: false,
+  },
+  iterador: {
+    type: Number,
+    require: false,
+  },
 
-});
+})
 
-const Contador = mongoose.model('Contador', ContadorSchema, 'Contadores', { versionKey: false });
+const Contador = mongoose.model('Contador', ContadorSchema, 'Contadores', { versionKey: false })
 
-module.exports = Contador;
+module.exports = Contador
