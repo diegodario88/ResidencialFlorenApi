@@ -1,4 +1,3 @@
-
 const moment = require('moment')
 const Repository = require('../repositories/plantaoRepository')
 const plantaoService = require('../services/plantaoService')
@@ -40,10 +39,10 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
     logInfo(plantaoAtual.name, diaAtual)
 
     plantaoService.getNextGroup(EscalaEnum, plantaoAtual)
-    await timeout(1200)
-    printService.printScrenn()
     return
   }
+
+  printService.printScrenn()
 
   console.info(
     `Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`,
