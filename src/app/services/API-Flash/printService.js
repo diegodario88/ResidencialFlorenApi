@@ -22,7 +22,6 @@ exports.printScrenn = () => {
             console.log('printService works!')
           }
         })
-        fs.close()
       }
     },
   )
