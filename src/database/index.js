@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
-require("dotenv").config();
+const mongoose = require('mongoose')
+require('dotenv').config()
 
 const config = {
-    promiseLibrary: global.Promise,
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+  promiseLibrary: global.Promise,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 }
 
-mongoose.connect(process.env.MONGO_URL, config);
-console.log('Connected to mongoDB!');
+mongoose.connect(process.env.MONGO_URL, config)
+console.log('Connected to mongoDB!')
 
 
-module.exports = mongoose;
+module.exports = mongoose
