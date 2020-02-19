@@ -5,6 +5,11 @@ require('dotenv').config()
 
 exports.printScreen = () => {
   try {
+    fs.unlink('/tmp/floren.png', (err) => {
+      if (err) throw err
+      // if no error, file has been deleted successfully
+      console.log('File deleted! ☑️')
+    })
     request(
       {
         url: global.process.env.API_FLASH,
