@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-unused-vars */
 const Twit = require('twit')
 const fs = require('fs')
 require('dotenv').config()
@@ -10,13 +12,6 @@ exports.makeTweet = (altText) => {
     access_token_secret: process.env.TOKEN_SECRET,
   })
 
-  const tweeted = (err, data, response) => {
-    if (err) {
-      console.log('Something went wrong on tweets')
-    }
-    console.log('Twitter works!')
-  }
-
   try {
     const dir = fs.openSync('/tmp/floren.png', 'r')
     const b64content = fs.readFileSync(dir, { encoding: 'base64' })
@@ -25,6 +20,7 @@ exports.makeTweet = (altText) => {
     // Upload Media
     const uploaded = (err, data, response) => {
       const mediaIdStr = data.media_id_string
+      // eslint-disable-next-line camelcase
       const meta_params = { media_id: mediaIdStr, alt_text: { text: altText } }
 
       twitter.post('media/metadata/create', meta_params, (err, data, response) => {
@@ -32,7 +28,10 @@ exports.makeTweet = (altText) => {
           // Reference the media and post a tweet (media will attach to the tweet)
           const params = { status: '📢 Plantão hoje #FlorenAPI', media_ids: [mediaIdStr] }
 
-          twitter.post('statuses/update', params, tweeted)
+          twitter.post('statuses/update', params, (err) => {
+            if (err) throw new Error('😜', err)
+            console.log('Twitter works! 🐦', response)
+          })
         }
       })
     }

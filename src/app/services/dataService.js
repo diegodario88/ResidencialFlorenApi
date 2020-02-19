@@ -1,3 +1,4 @@
+/* eslint-disable brace-style */
 const moment = require('moment')
 const Repository = require('../repositories/plantaoRepository')
 const plantaoService = require('../services/plantaoService')
@@ -7,10 +8,6 @@ const printService = require('./API-Flash/printService')
 // Definindo o intervalo
 const minutes = 120
 const interval = minutes * 60 * 1000
-
-function timeout(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
 
 const postTweet = (plantaoAtual) => {
   const altTtext = `${plantaoAtual.farmacias[0].name}
@@ -28,7 +25,7 @@ const logInfo = (name, diaAtual) => {
   console.info(`Plantão anterior: ${name} alterando para o próximo.`)
 }
 
-const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
+const checkDate = (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
   const diaPlantao = moment(dataEscala).utcOffset('-03:00')
 
   if (
@@ -38,18 +35,20 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
     // Troca plantão
     logInfo(plantaoAtual.name, diaAtual)
 
-    plantaoService.getNextGroup(EscalaEnum, plantaoAtual)
-    return
+    return plantaoService
+      .getNextGroup(EscalaEnum, plantaoAtual)
   }
-
-  printService.printScrenn()
 
   console.info(
     `Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`,
   )
 
+  if (diaAtual.hours() >= 13 && diaAtual.hours() <= 18) {
+    printService.printScreen()
+  }
+
   if (diaAtual.hours() >= 18 && diaAtual.hours() <= 21) {
-    postTweet(plantaoAtual)
+    return postTweet(plantaoAtual)
   }
 }
 
