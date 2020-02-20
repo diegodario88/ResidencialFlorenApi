@@ -4,7 +4,7 @@ const Twit = require('twit')
 const fs = require('fs')
 require('dotenv').config()
 
-exports.makeTweet = (altText) => {
+exports.makeTweet = async (altText) => {
   const twitter = new Twit({
     consumer_key: process.env.TWITTER_API_KEY,
     consumer_secret: process.env.TWITTER_API_SECRET_KEY,
@@ -13,10 +13,7 @@ exports.makeTweet = (altText) => {
   })
 
   try {
-    const dir = fs.openSync('/tmp/floren.png', 'r')
-    const b64content = fs.readFileSync(dir, { encoding: 'base64' })
-    fs.closeSync(dir)
-
+    const b64content = fs.readFileSync('/tmp/floren.png', { encoding: 'base64' })
     // Upload Media
     const uploaded = (err, data, response) => {
       const mediaIdStr = data.media_id_string
@@ -30,7 +27,7 @@ exports.makeTweet = (altText) => {
 
           twitter.post('statuses/update', params, (err) => {
             if (err) throw new Error('😜', err)
-            console.log('Twitter works! 🐦', response)
+            console.log('Twitter works! 🐦')
           })
         }
       })

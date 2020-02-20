@@ -25,7 +25,7 @@ const logInfo = (name, diaAtual) => {
   console.info(`Plantão anterior: ${name} alterando para o próximo.`)
 }
 
-const checkDate = (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
+const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
   const diaPlantao = moment(dataEscala).utcOffset('-03:00')
 
   if (
@@ -42,13 +42,9 @@ const checkDate = (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
   console.info(
     `Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`,
   )
-
-  if (diaAtual.hours() >= 13 && diaAtual.hours() <= 18) {
-    printService.printScreen()
-  }
-
-  if (diaAtual.hours() >= 18 && diaAtual.hours() <= 21) {
-    return postTweet(plantaoAtual)
+  if (diaAtual.hours() >= 17 && diaAtual.hours() <= 22) {
+    await printService.printScreen()
+    postTweet(plantaoAtual)
   }
 }
 

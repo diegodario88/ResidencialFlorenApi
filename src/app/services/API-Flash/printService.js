@@ -3,33 +3,31 @@ const request = require('request')
 const fs = require('fs')
 require('dotenv').config()
 
-exports.printScreen = () => {
-  try {
-    fs.unlink('/tmp/floren.png', (err) => {
-      if (err) throw err
-      // if no error, file has been deleted successfully
-      console.log('File deleted! ☑️')
-    })
-    request(
-      {
-        url: global.process.env.API_FLASH,
-        encoding: 'binary',
-        qs: {
-          access_key: global.process.env.ACCESS_KEY,
-          url: global.process.env.URL_DEST,
-        },
+exports.printScreen = () => new Promise((resolve, reject) => {
+  request(
+    {
+      url: global.process.env.API_FLASH,
+      encoding: 'binary',
+      qs: {
+        access_key: global.process.env.ACCESS_KEY,
+        url: global.process.env.URL_DEST,
+        fresh: true,
       },
-      (error, response, body) => {
-        if (error) throw new Error('Error 🙃', error)
-        else {
-          fs.writeFile('/tmp/floren.png', body, 'binary', (err) => {
-            if (err) throw new Error('Error 🤓', error)
-            console.log('printService works! 😄')
-          })
-        }
-      },
-    )
-  } catch (error) {
-    console.log(error)
-  }
-}
+    },
+    (error, response, body) => {
+      if (error) {
+        console.log('Error 🙃', error)
+        reject()
+      } else {
+        fs.writeFileSync('/tmp/floren.png', body, 'binary', (err) => {
+          if (err) {
+            console.log('Error 🤓', err)
+            reject()
+          }
+        })
+        console.log('printService works! 😄')
+      }
+      resolve()
+    },
+  )
+})
