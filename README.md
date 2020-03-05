@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://residencialfloren.firebaseapp.com/">
+  <a href="https://floren-api.appspot.com">
     <img src="./nodejs-cli-banner.png" alt="Logo" width="1000" height="200">
   </a>
 
@@ -53,4 +53,4 @@ The API runs on port ````3000```` by default, and the root can be accessed by na
 [Diego Dario](https://github.com/diegodario88).
 
 ### License
-CC-BY for all code unique to this API.
+MIT.
