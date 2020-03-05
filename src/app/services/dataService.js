@@ -6,7 +6,7 @@ const twitterService = require('./twitterService')
 const printService = require('./API-Flash/printService')
 
 // Definindo o intervalo
-const minutes = 1
+const minutes = 120
 const interval = minutes * 60 * 1000
 
 const postTweet = (plantaoAtual) => {
@@ -39,13 +39,13 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
       .getNextGroup(EscalaEnum, plantaoAtual)
   }
 
-  console.info(
-    `Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`,
-  )
   if (diaAtual.hours() > 18 && diaAtual.hours() < 22) {
     await printService.printScreen()
     postTweet(plantaoAtual)
   }
+  return console.info(
+    `Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`,
+  )
 }
 
 const monitorThread = async (diaAtual) => {
