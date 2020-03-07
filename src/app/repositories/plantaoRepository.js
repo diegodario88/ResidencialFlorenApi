@@ -1,103 +1,58 @@
 
-const mongoose = require('../../database/')
-const Farmacias = require('../models/farmacia')
-const Plantao = require('../models/plantao')
+const onCall = require('../models/plantao')
 
 
 exports.get = async () => {
   try {
-    const result = await Plantao
-      .find({})
+    return await onCall.find({})
       .populate('farmacias', 'name endereco telefone')
-    return result
   } catch (error) {
-    return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão!' })
+    return console.error(error)
   }
 }
 
 exports.findByID = async (id) => {
   try {
-    const result = await Plantao
-      .findOne({ _id: id })
+    return await onCall.findOne({ _id: id })
       .populate('farmacias', 'name endereco telefone')
-    return result
   } catch (error) {
-    return ({ error: 'UPS!, não consegui encontrar um plantão pelo filtro ID.' })
-  }
-}
-
-exports.getOne = async (filter) => {
-  try {
-    const res = await Plantao
-      .findOne({ name: filter })
-      .populate('farmacias')
-    return res
-  } catch (err) {
-    return ({ error: 'UPS!, não consegui encontrar um plantão pelo filtro informado.' })
+    return console.error(error)
   }
 }
 
 exports.getByName = async (name) => {
   try {
-    const res = await Plantao
-      .findOne({ name })
+    return await onCall.findOne({ name })
       .populate('farmacias', 'name endereco telefone')
-    return res
-  } catch (err) {
-    return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo nome.' })
+  } catch (error) {
+    return console.error(error)
   }
 }
 exports.getByNumber = async (number) => {
   try {
-    const res = await Plantao
-      .findOne({})
+    return await onCall.findOne({})
       .populate('farmacias', 'name endereco telefone')
       .where('numero').equals(number)
-    return res
-  } catch (err) {
-    return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo número.' })
+  } catch (error) {
+    return console.error(error)
   }
 }
 
-exports.updatePlantao = async (filter, update) => {
+exports.updateonCall = async (filter, update) => {
   try {
-    await Plantao
-      .updateOne(filter, update)
-
+    await onCall.updateOne(filter, update)
     return console.warn('Plantão updated succefully')
-  } catch (err) {
-    console.log(err)
-
-    return ({ error: 'Something bad happened on updatePlantão service' })
+  } catch (error) {
+    return console.error(error)
   }
 }
 
-exports.getByStatusSemanal = async () => {
+exports.getByStatus = async (status) => {
   try {
-    return await Plantao.findOne()
+    return await onCall.findOne()
       .populate('farmacias', 'name endereco telefone')
-      .where('statusSemanal').equals('true')
+      .where(`status${status}`).equals('true')
   } catch (error) {
-    return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo status Semanal.' })
-  }
-}
-
-exports.getByStatusSabadal = async () => {
-  try {
-    return await Plantao.findOne()
-      .populate('farmacias', 'name endereco telefone')
-      .where('statusSabado').equals('true')
-  } catch (error) {
-    return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo status Sabadal.' })
-  }
-}
-
-exports.getByStatusDomingal = async () => {
-  try {
-    return await Plantao.findOne()
-      .populate('farmacias', 'name endereco telefone')
-      .where('statusDomingo').equals('true')
-  } catch (error) {
-    return ({ error: 'Errei aqui. Não consegui encontrar nenhum plantão pelo status Domingal.' })
+    return console.error(error)
   }
 }

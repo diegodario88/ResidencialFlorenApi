@@ -1,12 +1,12 @@
 /* eslint-disable brace-style */
 const moment = require('moment')
 const Repository = require('../repositories/plantaoRepository')
-const plantaoService = require('../services/plantaoService')
+const plantaoService = require('./plantaoService')
 const twitterService = require('./twitterService')
-const printService = require('./API-Flash/printService')
+const printService = require('./printService')
 
 // Definindo o intervalo
-const minutes = 120
+const minutes = 1
 const interval = minutes * 60 * 1000
 
 const postTweet = (plantaoAtual) => {
@@ -39,9 +39,9 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
       .getNextGroup(EscalaEnum, plantaoAtual)
   }
 
-  if (diaAtual.hours() > 18 && diaAtual.hours() < 22) {
+  if (diaAtual.hours() > 18 && diaAtual.hours() <= 23) {
     await printService.printScreen()
-    postTweet(plantaoAtual)
+    await postTweet(plantaoAtual)
   }
   return console.info(
     `Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`,
@@ -57,17 +57,17 @@ const monitorThread = async (diaAtual) => {
 
   // SEMANAL
   if (dia > domingo && dia < sabado) {
-    plantaoAtual = await Repository.getByStatusSemanal()
+    plantaoAtual = await Repository.getByStatus('Semanal')
     const { escalaSemanal } = plantaoAtual
     checkDate(plantaoAtual, diaAtual, EscalaEnum.semanal, escalaSemanal)
   } // SABADAL
   else if (dia === sabado) {
-    plantaoAtual = await Repository.getByStatusSabadal()
+    plantaoAtual = await Repository.getByStatus('Sabado')
     const { escalaSabado } = plantaoAtual
     checkDate(plantaoAtual, diaAtual, EscalaEnum.sabadal, escalaSabado)
   } // DOMINGAL
   else {
-    plantaoAtual = await Repository.getByStatusDomingal()
+    plantaoAtual = await Repository.getByStatus('Domingo')
     const { escalaDomingo } = plantaoAtual
     checkDate(plantaoAtual, diaAtual, EscalaEnum.domingal, escalaDomingo)
   }

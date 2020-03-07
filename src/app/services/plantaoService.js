@@ -146,9 +146,9 @@ exports.getCurrentGroup = () => {
   const sabado = 6
   const domingo = 0
 
-  if (dia > domingo && dia < sabado) return Repository.getByStatusSemanal()
+  if (dia > domingo && dia < sabado) return Repository.getByStatus('Semanal')
 
-  if (dia === sabado) return Repository.getByStatusSabadal()
+  if (dia === sabado) return Repository.getByStatus('Sabado')
 
-  return Repository.getByStatusDomingal()
+  return Repository.getByStatus('Domingo')
 }
