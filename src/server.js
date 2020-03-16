@@ -6,7 +6,7 @@ const bodyParser = require('body-parser')
 const middlewares = require('./middlewares')
 const routes = require('./app/controllers/routes')
 require('dotenv').config()
-require('./app/services/dataService')
+require('./app/services/date')
 
 function normalizePort(val) {
   const port = parseInt(val, 10)

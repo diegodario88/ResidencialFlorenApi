@@ -1,20 +1,13 @@
 /* eslint-disable brace-style */
 const moment = require('moment')
-const Repository = require('../repositories/plantaoRepository')
-const plantaoService = require('./plantaoService')
-const twitterService = require('./twitterService')
-const printService = require('./printService')
+const Repository = require('../repositories/onCall')
+const plantaoService = require('./onCall')
+const twitterService = require('./twitter')
+const printService = require('./printScreen')
 
 // Definindo o intervalo
-const minutes = 1
+const minutes = 120
 const interval = minutes * 60 * 1000
-
-const postTweet = (plantaoAtual) => {
-  const altTtext = `${plantaoAtual.farmacias[0].name}
-    ${plantaoAtual.farmacias[1].name}`
-
-  twitterService.makeTweet(altTtext)
-}
 
 const logInfo = (name, diaAtual) => {
   console.info(
@@ -39,9 +32,9 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
       .getNextGroup(EscalaEnum, plantaoAtual)
   }
 
-  if (diaAtual.hours() > 18 && diaAtual.hours() <= 23) {
+  if (diaAtual.hours() > 18 && diaAtual.hours() < 22) {
     await printService.printScreen()
-    await postTweet(plantaoAtual)
+    await twitterService.makeTweet()
   }
   return console.info(
     `Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`,

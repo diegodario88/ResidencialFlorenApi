@@ -2,8 +2,8 @@ const { Router } = require('express')
 const RateLimt = require('express-rate-limit')
 const MongoStore = require('rate-limit-mongo')
 const Pharmacy = require('../models/farmacia')
-const Repository = require('../repositories/plantaoRepository')
-const onCallService = require('../services/plantaoService')
+const Repository = require('../repositories/onCall')
+const onCallService = require('../services/onCall')
 require('dotenv').config()
 
 const { MONGO_URL } = process.env

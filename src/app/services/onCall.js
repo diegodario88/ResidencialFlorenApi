@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 const moment = require('moment')
-const Repository = require('../repositories/plantaoRepository')
-const CounterRepository = require('../repositories/contadorRepository')
+const Repository = require('../repositories/onCall')
+const CounterRepository = require('../repositories/counter')
 
 function getCounter(type) {
   return (
