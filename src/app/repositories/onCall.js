@@ -38,7 +38,7 @@ exports.getByNumber = async (number) => {
   }
 }
 
-exports.updateonCall = async (filter, update) => {
+exports.updateOnCall = async (filter, update) => {
   try {
     await onCall.updateOne(filter, update)
     return console.warn('Plantão updated succefully')

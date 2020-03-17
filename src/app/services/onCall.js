@@ -63,33 +63,33 @@ async function updateGroupData(plantaoAnterior, plantaoAtual, escala) {
 
     switch (escala) {
     case 1:
-      await Repository.updatePlantao(
+      await Repository.updateOnCall(
         { _id: plantaoAnterior._id },
         { statusSemanal: false },
       )
-      await Repository.updatePlantao(
+      await Repository.updateOnCall(
         { _id: plantaoAtual._id },
         { escalaSemanal: date, statusSemanal: true },
       )
       break
 
     case 2:
-      await Repository.updatePlantao(
+      await Repository.updateOnCall(
         { _id: plantaoAnterior._id },
         { statusSabado: false },
       )
-      await Repository.updatePlantao(
+      await Repository.updateOnCall(
         { _id: plantaoAtual._id },
         { escalaSabado: date, statusSabado: true },
       )
       break
 
     case 3:
-      await Repository.updatePlantao(
+      await Repository.updateOnCall(
         { _id: plantaoAnterior._id },
         { statusDomingo: false },
       )
-      await Repository.updatePlantao(
+      await Repository.updateOnCall(
         { _id: plantaoAtual._id },
         { escalaDomingo: date, statusDomingo: true },
       )
