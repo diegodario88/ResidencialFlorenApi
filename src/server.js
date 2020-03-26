@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
     title: 'Florence - Api',
     description: 'Fornece informações sobre as farmácias de plantão',
     mainRoute: '/api/v1/plantoes/atual',
-    version: '1.0.1',
+    version: '1.1.0',
     author: 'Diego Dario',
   })
 })

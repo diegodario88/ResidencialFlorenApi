@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-unused-expressions */
 const moment = require('moment')
 const Repository = require('../repositories/onCall')
@@ -103,7 +104,7 @@ async function updateGroupData(plantaoAnterior, plantaoAtual, escala) {
   }
 }
 
-exports.getNextGroup = async function getNextGroups(escala, plantaoAtual) {
+async function getNextGroups(escala, plantaoAtual) {
   try {
     let nextGroup = null
 
@@ -139,7 +140,7 @@ exports.getNextGroup = async function getNextGroups(escala, plantaoAtual) {
   }
 }
 
-exports.getCurrentGroup = () => {
+function getCurrentGroup() {
   const dia = moment()
     .utcOffset('-03:00')
     .day()
@@ -151,4 +152,96 @@ exports.getCurrentGroup = () => {
   if (dia === sabado) return Repository.getByStatus('Sabado')
 
   return Repository.getByStatus('Domingo')
+}
+
+async function getPeriod(firstDate, secondDate) {
+  try {
+    const dateNow = moment().utcOffset('-03:00')
+    const firstMoment = moment(firstDate).utcOffset('-03:00')
+    const secondMoment = moment(secondDate).utcOffset('-03:00')
+
+    if (firstMoment.isAfter(dateNow) && secondMoment.isAfter(dateNow)) {
+      const daysToIterate = firstMoment.diff(dateNow, 'days') + 1
+      const fullListOnCall = await Repository.get()
+      fullListOnCall.sort((a, b) => a.numero - b.numero)
+
+      const onCallList = []
+      let timesWeek = await getIterator('weekDay')
+      let timesSaturday = await getIterator('saturday')
+      let timesSunday = await getIterator('sunday')
+      let dayOfWeekString = ''
+
+      for (let index = 1; index <= daysToIterate; index++) {
+        const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
+        const dayWeek = dateTomorrow.day()
+        if (dayWeek >= 1 && dayWeek <= 5) {
+          timesWeek += 1
+          if (timesWeek > 13) {
+            timesWeek = 1
+          }
+          dayOfWeekString = 'weekDay'
+        } else if (dayWeek === 6) {
+          timesSaturday += 1
+          if (timesSaturday > 13) {
+            timesWeek = 1
+          }
+          dayOfWeekString = 'saturday'
+        } else {
+          timesSunday += 1
+          if (timesSunday > 13) {
+            timesWeek = 1
+          }
+          dayOfWeekString = 'sunday'
+        }
+      }
+      if (dayOfWeekString === 'weekDay') {
+        onCallList.push([firstMoment.format('DD/MM/YYYY'), fullListOnCall[timesWeek - 1]])
+      } else if (dayOfWeekString === 'saturday') {
+        onCallList.push([firstMoment.format('DD/MM/YYYY'), fullListOnCall[timesSaturday - 1]])
+      } else {
+        onCallList.push([firstMoment.format('DD/MM/YYYY'), fullListOnCall[timesSunday - 1]])
+      }
+
+      const daysToIterateFromSecondDate = secondMoment.diff(firstMoment, 'days')
+
+      for (let index = 1; index <= daysToIterateFromSecondDate; index++) {
+        const dateTomorrow = moment(firstMoment).add(index, 'day').utcOffset('-03:00')
+        const dayWeek = dateTomorrow.day()
+        if (dayWeek >= 1 && dayWeek <= 5) {
+          timesWeek += 1
+          if (timesWeek > 13) {
+            timesWeek = 1
+            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[0]])
+          } else {
+            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[(timesWeek - 1)]])
+          }
+        } else if (dayWeek === 6) {
+          timesSaturday += 1
+          if (timesSaturday > 13) {
+            timesWeek = 1
+            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[0]])
+          } else {
+            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[(timesSaturday - 1)]])
+          }
+        } else {
+          timesSunday += 1
+          if (timesSunday > 13) {
+            timesWeek = 1
+            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[0]])
+          } else {
+            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[(timesSunday - 1)]])
+          }
+        }
+      }
+      return onCallList
+    } throw new Error(`Not future dates:  ${firstDate} - ${secondDate}`)
+  } catch (error) {
+    return console.error(error.message)
+  }
+}
+
+module.exports = {
+  getNextGroups,
+  getCurrentGroup,
+  getPeriod,
 }

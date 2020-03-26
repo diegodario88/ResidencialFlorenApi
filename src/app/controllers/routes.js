@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const { Router } = require('express')
 const RateLimt = require('express-rate-limit')
 const MongoStore = require('rate-limit-mongo')
@@ -51,6 +52,20 @@ router.get('/plantoes/:name', async (req, res, next) => {
   try {
     const entries = await Repository.getByName(req.params.name)
     res.send(entries)
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.post('/plantoes/future', async (req, res, next) => {
+  try {
+    const { firstDate, secondDate } = req.body
+    const entries = await onCallService.getPeriod(firstDate, secondDate)
+    if (entries !== undefined) {
+      return res.send(entries)
+    }
+    res.status(422)
+    throw new Error(`Not future dates:  ${firstDate} - ${secondDate}`)
   } catch (error) {
     next(error)
   }
