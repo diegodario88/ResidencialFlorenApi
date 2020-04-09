@@ -157,7 +157,7 @@ function getCurrentGroup() {
 async function getPeriod(firstDate, secondDate) {
   try {
     const dateNow = moment().utcOffset('-03:00')
-    const firstMoment = moment(firstDate).utcOffset('-03:00')
+    const firstMoment = moment(firstDate)
     const secondMoment = moment(secondDate).utcOffset('-03:00')
 
     if (firstMoment.isAfter(dateNow) && secondMoment.isAfter(dateNow)) {
@@ -172,7 +172,7 @@ async function getPeriod(firstDate, secondDate) {
       let dayOfWeekString = ''
 
       for (let index = 1; index <= daysToIterate; index++) {
-        const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
+        const dateTomorrow = moment().add(index, 'day')
         const dayWeek = dateTomorrow.day()
         if (dayWeek >= 1 && dayWeek <= 5) {
           timesWeek += 1
@@ -183,53 +183,54 @@ async function getPeriod(firstDate, secondDate) {
         } else if (dayWeek === 6) {
           timesSaturday += 1
           if (timesSaturday > 13) {
-            timesWeek = 1
+            timesSaturday = 1
           }
           dayOfWeekString = 'saturday'
         } else {
           timesSunday += 1
           if (timesSunday > 13) {
-            timesWeek = 1
+            timesSunday = 1
           }
           dayOfWeekString = 'sunday'
         }
       }
+
       if (dayOfWeekString === 'weekDay') {
-        onCallList.push([firstMoment.format('DD/MM/YYYY'), fullListOnCall[timesWeek - 1]])
+        onCallList.push([firstMoment.format('YYYY-MM-DD'), fullListOnCall[timesWeek - 1]])
       } else if (dayOfWeekString === 'saturday') {
-        onCallList.push([firstMoment.format('DD/MM/YYYY'), fullListOnCall[timesSaturday - 1]])
+        onCallList.push([firstMoment.format('YYYY-MM-DD'), fullListOnCall[timesSaturday - 1]])
       } else {
-        onCallList.push([firstMoment.format('DD/MM/YYYY'), fullListOnCall[timesSunday - 1]])
+        onCallList.push([firstMoment.format('YYYY-MM-DD'), fullListOnCall[timesSunday - 1]])
       }
 
-      const daysToIterateFromSecondDate = secondMoment.diff(firstMoment, 'days')
+      const daysToIterateFromSecondDate = secondMoment.diff(new Date(firstDate), 'days')
 
       for (let index = 1; index <= daysToIterateFromSecondDate; index++) {
-        const dateTomorrow = moment(firstMoment).add(index, 'day').utcOffset('-03:00')
+        const dateTomorrow = moment(firstMoment).add(index, 'day')
         const dayWeek = dateTomorrow.day()
         if (dayWeek >= 1 && dayWeek <= 5) {
           timesWeek += 1
           if (timesWeek > 13) {
             timesWeek = 1
-            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[0]])
+            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[0]])
           } else {
-            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[(timesWeek - 1)]])
+            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[(timesWeek - 1)]])
           }
         } else if (dayWeek === 6) {
           timesSaturday += 1
           if (timesSaturday > 13) {
-            timesWeek = 1
-            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[0]])
+            timesSaturday = 1
+            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[0]])
           } else {
-            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[(timesSaturday - 1)]])
+            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[(timesSaturday - 1)]])
           }
         } else {
           timesSunday += 1
           if (timesSunday > 13) {
-            timesWeek = 1
-            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[0]])
+            timesSunday = 1
+            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[0]])
           } else {
-            onCallList.push([dateTomorrow.format('DD/MM/YYYY'), fullListOnCall[(timesSunday - 1)]])
+            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[(timesSunday - 1)]])
           }
         }
       }
