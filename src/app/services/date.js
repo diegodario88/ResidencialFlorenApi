@@ -6,7 +6,7 @@ const twitterService = require('./twitter')
 const printService = require('./printScreen')
 
 // Definindo o intervalo
-const minutes = 120
+const minutes = 1
 const interval = minutes * 60 * 1000
 
 const logInfo = (name, diaAtual) => {
@@ -29,7 +29,7 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
     logInfo(plantaoAtual.name, diaAtual)
 
     return plantaoService
-      .getNextGroup(EscalaEnum, plantaoAtual)
+      .getNextGroups(EscalaEnum, plantaoAtual)
   }
 
   if (diaAtual.hours() > 18 && diaAtual.hours() < 22) {
