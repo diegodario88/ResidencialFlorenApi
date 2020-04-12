@@ -157,7 +157,7 @@ function getCurrentGroup() {
 async function getPeriod(firstDate, secondDate) {
   try {
     const dateNow = moment().utcOffset('-03:00')
-    const firstMoment = moment(firstDate)
+    const firstMoment = moment(firstDate).utcOffset('-03:00')
     const secondMoment = moment(secondDate).utcOffset('-03:00')
 
     if (firstMoment.isAfter(dateNow) && secondMoment.isAfter(dateNow)) {

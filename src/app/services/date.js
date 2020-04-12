@@ -6,7 +6,7 @@ const twitterService = require('./twitter')
 const printService = require('./printScreen')
 
 // Definindo o intervalo
-const minutes = 1
+const minutes = 120
 const interval = minutes * 60 * 1000
 
 const logInfo = (name, diaAtual) => {
