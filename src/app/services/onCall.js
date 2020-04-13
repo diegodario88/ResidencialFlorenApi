@@ -156,12 +156,12 @@ function getCurrentGroup() {
 
 async function getPeriod(firstDate, secondDate) {
   try {
-    const dateNow = moment().utcOffset('-03:00')
-    const firstMoment = moment(firstDate).utcOffset('-03:00')
-    const secondMoment = moment(secondDate).utcOffset('-03:00')
+    const dateNow = moment().locale('pt-br')
+    const firstMoment = moment(firstDate).locale('pt-br')
+    const secondMoment = moment(secondDate).endOf('month').locale('pt-br')
 
     if (firstMoment.isAfter(dateNow) && secondMoment.isAfter(dateNow)) {
-      const daysToIterate = firstMoment.diff(dateNow, 'days') + 1
+      const daysToIterate = firstMoment.diff(dateNow, 'days')
       const fullListOnCall = await Repository.get()
       fullListOnCall.sort((a, b) => a.numero - b.numero)
 
@@ -171,7 +171,7 @@ async function getPeriod(firstDate, secondDate) {
       let timesSunday = await getIterator('sunday')
       let dayOfWeekString = ''
 
-      for (let index = 1; index <= daysToIterate; index++) {
+      for (let index = 1; index < daysToIterate; index++) {
         const dateTomorrow = moment().add(index, 'day')
         const dayWeek = dateTomorrow.day()
         if (dayWeek >= 1 && dayWeek <= 5) {
@@ -203,7 +203,7 @@ async function getPeriod(firstDate, secondDate) {
         onCallList.push([firstMoment.format('YYYY-MM-DD'), fullListOnCall[timesSunday - 1]])
       }
 
-      const daysToIterateFromSecondDate = secondMoment.diff(new Date(firstDate), 'days')
+      const daysToIterateFromSecondDate = secondMoment.diff(firstMoment, 'days')
 
       for (let index = 1; index <= daysToIterateFromSecondDate; index++) {
         const dateTomorrow = moment(firstMoment).add(index, 'day')
