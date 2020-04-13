@@ -156,86 +156,63 @@ function getCurrentGroup() {
 
 async function getPeriod(firstDate, secondDate) {
   try {
-    const dateNow = moment().locale('pt-br')
+    const dateNow = moment().locale('pt-br').startOf('day')
     const firstMoment = moment(firstDate).locale('pt-br')
     const secondMoment = moment(secondDate).endOf('month').locale('pt-br')
+    const dayWeekFirstMoment = firstMoment.day()
 
     if (firstMoment.isAfter(dateNow) && secondMoment.isAfter(dateNow)) {
-      const daysToIterate = firstMoment.diff(dateNow, 'days')
+      const daysToIterate = firstMoment.diff(dateNow, 'day')
       const fullListOnCall = await Repository.get()
       fullListOnCall.sort((a, b) => a.numero - b.numero)
 
       const onCallList = []
-      let timesWeek = await getIterator('weekDay')
-      let timesSaturday = await getIterator('saturday')
-      let timesSunday = await getIterator('sunday')
-      let dayOfWeekString = ''
+      const monday = 1
+      const friday = 5
+      const saturday = 6
 
-      for (let index = 1; index < daysToIterate; index++) {
-        const dateTomorrow = moment().add(index, 'day')
+      const futureIterator = {
+        weekDay: await getIterator('weekDay'),
+        saturday: await getIterator('saturday'),
+        sunday: await getIterator('sunday'),
+        IncreaseAndResetCounter(type) {
+          futureIterator[type]++
+          futureIterator[type] > 13 ? futureIterator[type] = 1 : null
+        },
+      }
+
+      const checkScaleType = (day) => {
+        if (day >= monday && day <= friday) return 'weekDay'
+        if (day === saturday) return 'saturday'
+        return 'sunday'
+      }
+
+      for (let index = 1; index <= daysToIterate; index++) {
+        const dateTomorrow = moment().add(index, 'day').locale('pt-br')
         const dayWeek = dateTomorrow.day()
-        if (dayWeek >= 1 && dayWeek <= 5) {
-          timesWeek += 1
-          if (timesWeek > 13) {
-            timesWeek = 1
-          }
-          dayOfWeekString = 'weekDay'
-        } else if (dayWeek === 6) {
-          timesSaturday += 1
-          if (timesSaturday > 13) {
-            timesSaturday = 1
-          }
-          dayOfWeekString = 'saturday'
-        } else {
-          timesSunday += 1
-          if (timesSunday > 13) {
-            timesSunday = 1
-          }
-          dayOfWeekString = 'sunday'
-        }
+        futureIterator.IncreaseAndResetCounter(checkScaleType(dayWeek))
       }
 
-      if (dayOfWeekString === 'weekDay') {
-        onCallList.push([firstMoment.format('YYYY-MM-DD'), fullListOnCall[timesWeek - 1]])
-      } else if (dayOfWeekString === 'saturday') {
-        onCallList.push([firstMoment.format('YYYY-MM-DD'), fullListOnCall[timesSaturday - 1]])
-      } else {
-        onCallList.push([firstMoment.format('YYYY-MM-DD'), fullListOnCall[timesSunday - 1]])
-      }
+      onCallList.push([
+        firstMoment.format('YYYY-MM-DD'),
+        fullListOnCall[futureIterator[checkScaleType(dayWeekFirstMoment)] - 1],
+        // push the first group based on a type of iterator
+      ])
 
       const daysToIterateFromSecondDate = secondMoment.diff(firstMoment, 'days')
 
       for (let index = 1; index <= daysToIterateFromSecondDate; index++) {
-        const dateTomorrow = moment(firstMoment).add(index, 'day')
+        const dateTomorrow = moment(firstMoment).add(index, 'day').locale('pt-br')
         const dayWeek = dateTomorrow.day()
-        if (dayWeek >= 1 && dayWeek <= 5) {
-          timesWeek += 1
-          if (timesWeek > 13) {
-            timesWeek = 1
-            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[0]])
-          } else {
-            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[(timesWeek - 1)]])
-          }
-        } else if (dayWeek === 6) {
-          timesSaturday += 1
-          if (timesSaturday > 13) {
-            timesSaturday = 1
-            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[0]])
-          } else {
-            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[(timesSaturday - 1)]])
-          }
-        } else {
-          timesSunday += 1
-          if (timesSunday > 13) {
-            timesSunday = 1
-            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[0]])
-          } else {
-            onCallList.push([dateTomorrow.format('YYYY-MM-DD'), fullListOnCall[(timesSunday - 1)]])
-          }
-        }
+        futureIterator.IncreaseAndResetCounter(checkScaleType(dayWeek))
+        onCallList.push([
+          dateTomorrow.format('YYYY-MM-DD'),
+          fullListOnCall[futureIterator[checkScaleType(dayWeek)] - 1],
+          // push rest groups based on a type of iterator
+        ])
       }
       return onCallList
-    } throw new Error(`Not future dates:  ${firstDate} - ${secondDate}`)
+    } throw new Error(`Problem with dates:  ${firstDate} - ${secondDate}`)
   } catch (error) {
     return console.error(error.message)
   }
