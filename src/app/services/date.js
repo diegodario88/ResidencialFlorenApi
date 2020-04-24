@@ -1,13 +1,11 @@
 /* eslint-disable brace-style */
 const moment = require('moment')
+const cron = require('node-cron')
 const Repository = require('../repositories/onCall')
 const plantaoService = require('./onCall')
 const twitterService = require('./twitter')
 const printService = require('./printScreen')
 
-// Definindo o intervalo
-const minutes = 120
-const interval = minutes * 60 * 1000
 
 const logInfo = (name, diaAtual) => {
   console.info(
@@ -66,14 +64,17 @@ const monitorThread = async (diaAtual) => {
   }
 }
 
-setInterval(() => {
+cron.schedule('0 0 * * *', () => {
   console.warn(`Monitorando --> 
     Data atual: ${moment()
     .utcOffset('-03:00')
     .format('DD/MM/YYYY - H:mm:ss A')}`)
   const diaAtual = moment().utcOffset('-03:00')
   monitorThread(diaAtual).catch(console.warn)
-}, interval)
+}, {
+  scheduled: true,
+  timezone: 'America/Sao_Paulo',
+})
 
 
 module.exports = { monitorThread }

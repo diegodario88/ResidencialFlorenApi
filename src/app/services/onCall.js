@@ -156,13 +156,27 @@ function getCurrentGroup() {
 
 async function getPeriod(firstDate, secondDate) {
   try {
-    const dateNow = moment().locale('pt-br').startOf('day')
-    const firstMoment = moment(firstDate).locale('pt-br')
-    const secondMoment = moment(secondDate).endOf('month').locale('pt-br')
+    const dateNow = moment().startOf('day')
+    const firstMoment = moment(firstDate).startOf('day')
+    const secondMoment = moment(secondDate).endOf('month')
     const dayWeekFirstMoment = firstMoment.day()
+    const months = [
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
+    ]
 
     if (firstMoment.isAfter(dateNow) && secondMoment.isAfter(dateNow)) {
-      const daysToIterate = firstMoment.diff(dateNow, 'day')
+      const daysToIterate = firstMoment.diff(dateNow, 'days')
       const fullListOnCall = await Repository.get()
       fullListOnCall.sort((a, b) => a.numero - b.numero)
 
@@ -188,31 +202,54 @@ async function getPeriod(firstDate, secondDate) {
       }
 
       for (let index = 1; index <= daysToIterate; index++) {
-        const dateTomorrow = moment().add(index, 'day').locale('pt-br')
+        const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
         const dayWeek = dateTomorrow.day()
         futureIterator.IncreaseAndResetCounter(checkScaleType(dayWeek))
       }
 
-      onCallList.push([
-        firstMoment.format('YYYY-MM-DD'),
-        fullListOnCall[futureIterator[checkScaleType(dayWeekFirstMoment)] - 1],
-        // push the first group based on a type of iterator
-      ])
+      onCallList.push({
+        [months[firstMoment.month()]]: [{
+          day: firstMoment.format('YYYY-MM-DD'),
+          pharmacys: fullListOnCall[futureIterator[
+            checkScaleType(dayWeekFirstMoment)] - 1].farmacias,
+          group: fullListOnCall[futureIterator[
+            checkScaleType(dayWeekFirstMoment)] - 1].name,
+        }],
+      })
+      // push the first group based on a type of iterator
 
       const daysToIterateFromSecondDate = secondMoment.diff(firstMoment, 'days')
 
       for (let index = 1; index <= daysToIterateFromSecondDate; index++) {
-        const dateTomorrow = moment(firstMoment).add(index, 'day').locale('pt-br')
+        const dateTomorrow = moment(firstMoment).add(index, 'day')
         const dayWeek = dateTomorrow.day()
+        const month = months[dateTomorrow.month()]
+        const listIndex = (onCallList.length - 1)
         futureIterator.IncreaseAndResetCounter(checkScaleType(dayWeek))
-        onCallList.push([
-          dateTomorrow.format('YYYY-MM-DD'),
-          fullListOnCall[futureIterator[checkScaleType(dayWeek)] - 1],
-          // push rest groups based on a type of iterator
-        ])
+        // eslint-disable-next-line no-prototype-builtins
+        if (onCallList[listIndex].hasOwnProperty(month)) {
+          onCallList[listIndex][month].push({
+            day: dateTomorrow.format('YYYY-MM-DD'),
+            pharmacys: fullListOnCall[futureIterator[
+              checkScaleType(dayWeek)] - 1].farmacias,
+            group: fullListOnCall[futureIterator[
+              checkScaleType(dayWeek)] - 1].name,
+            // push rest groups based on a type of iterator
+          })
+        } else {
+          onCallList.push({
+            [months[dateTomorrow.month()]]: [{
+              day: dateTomorrow.format('YYYY-MM-DD'),
+              pharmacys: fullListOnCall[futureIterator[
+                checkScaleType(dayWeek)] - 1].farmacias,
+              group: fullListOnCall[futureIterator[
+                checkScaleType(dayWeek)] - 1].name,
+            }],
+          })
+        }
       }
       return onCallList
-    } throw new Error(`Problem with dates:  ${firstDate} - ${secondDate}`)
+    } throw new Error(`Problem with dates:  ${firstDate} or ${secondDate}, arent after ${dateNow.format('YYYY-MM-DD')}`)
   } catch (error) {
     return console.error(error.message)
   }
