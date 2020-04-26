@@ -5,7 +5,7 @@ const onCall = require('../models/plantao')
 exports.get = async () => {
   try {
     return await onCall.find({})
-      .populate('farmacias', 'name endereco telefone')
+      .populate('farmacias', 'name endereco telefone location')
   } catch (error) {
     return console.error(error)
   }
@@ -14,7 +14,7 @@ exports.get = async () => {
 exports.findByID = async (id) => {
   try {
     return await onCall.findOne({ _id: id })
-      .populate('farmacias', 'name endereco telefone')
+      .populate('farmacias', 'name endereco telefone location')
   } catch (error) {
     return console.error(error)
   }
@@ -23,7 +23,7 @@ exports.findByID = async (id) => {
 exports.getByName = async (name) => {
   try {
     return await onCall.findOne({ name })
-      .populate('farmacias', 'name endereco telefone')
+      .populate('farmacias', 'name endereco telefone location')
   } catch (error) {
     return console.error(error)
   }
@@ -31,7 +31,7 @@ exports.getByName = async (name) => {
 exports.getByNumber = async (number) => {
   try {
     return await onCall.findOne({})
-      .populate('farmacias', 'name endereco telefone')
+      .populate('farmacias', 'name endereco telefone location')
       .where('numero').equals(number)
   } catch (error) {
     return console.error(error)
@@ -50,7 +50,7 @@ exports.updateOnCall = async (filter, update) => {
 exports.getByStatus = async (status) => {
   try {
     return await onCall.findOne()
-      .populate('farmacias', 'name endereco telefone')
+      .populate('farmacias', 'name endereco telefone location')
       .where(`status${status}`).equals('true')
   } catch (error) {
     return console.error(error)

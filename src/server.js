@@ -29,14 +29,14 @@ app.use(cors())
 app.use(routes.limiter)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.listen(port, () => console.log(`ResidencialFloren-Api em execução... port:${port} recebendo requisições.`))
+app.listen(port, () => console.log(`FlorenceAPI status: 🆙 port:${port} receiving requests`))
 
 app.get('/', (req, res) => {
   res.status(200).send({
     title: 'Florence - Api',
     description: 'Fornece informações sobre as farmácias de plantão',
     mainRoute: '/api/v1/plantoes/atual',
-    version: '1.1.0',
+    version: '1.1.1',
     author: 'Diego Dario',
   })
 })

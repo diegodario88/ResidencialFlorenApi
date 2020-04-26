@@ -13,7 +13,10 @@ const FarmaciaSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-
+  location: {
+    lat: Number,
+    lng: Number,
+  },
 })
 
 const Farmacia = mongoose.model('Farmacia', FarmaciaSchema, 'Farmacias', { versionKey: false })

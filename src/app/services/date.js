@@ -30,10 +30,6 @@ const checkDate = async (plantaoAtual, diaAtual, EscalaEnum, dataEscala) => {
       .getNextGroups(EscalaEnum, plantaoAtual)
   }
 
-  if (diaAtual.hours() > 18 && diaAtual.hours() < 22) {
-    await printService.printScreen()
-    await twitterService.makeTweet()
-  }
   return console.info(
     `Data do plantão: ${diaPlantao.format('DD/MM/YYYY - H:mm:ss A')}`,
   )
@@ -63,6 +59,14 @@ const monitorThread = async (diaAtual) => {
     checkDate(plantaoAtual, diaAtual, EscalaEnum.domingal, escalaDomingo)
   }
 }
+
+cron.schedule('0 18 * * *', async () => {
+  await printService.printScreen()
+  await twitterService.makeTweet()
+}, {
+  scheduled: true,
+  timezone: 'America/Sao_Paulo',
+})
 
 cron.schedule('0 0 * * *', () => {
   console.warn(`Monitorando --> 
