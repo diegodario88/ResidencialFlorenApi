@@ -80,5 +80,4 @@ cron.schedule('0 0 * * *', () => {
   timezone: 'America/Sao_Paulo',
 })
 
-
 module.exports = { monitorThread }

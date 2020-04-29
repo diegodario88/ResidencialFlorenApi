@@ -5,18 +5,18 @@ const Repository = require('../repositories/onCall')
 const CounterRepository = require('../repositories/counter')
 
 function getCounter(type) {
-  return (
-    {
-      weekDay: '5e06e91a1c9d440000ad44f0',
-      saturday: '5e06e9571c9d440000ad44f1',
-      sunday: '5e06e97d1c9d440000ad44f2',
-    }[type] || 'ID not found'
-  )
+  return ({
+    weekDay: '5e06e91a1c9d440000ad44f0',
+    saturday: '5e06e9571c9d440000ad44f1',
+    sunday: '5e06e97d1c9d440000ad44f2',
+  }[type] || 'ID not found')
 }
 
 async function getIterator(type) {
   try {
-    const { iterador } = {
+    const {
+      iterador,
+    } = {
       weekDay: await CounterRepository.findById(getCounter('weekDay')),
       saturday: await CounterRepository.findById(getCounter('saturday')),
       sunday: await CounterRepository.findById(getCounter('sunday')),
@@ -24,29 +24,38 @@ async function getIterator(type) {
 
     return iterador
   } catch (error) {
-    return { err: ' Cannot find type' }
+    return {
+      err: ' Cannot find type',
+    }
   }
 }
 
 async function updateCounter(type) {
-  const Enum = Object.freeze({ startGroup: 1, endGroup: 13 })
+  const Enum = Object.freeze({
+    startGroup: 1,
+    endGroup: 13,
+  })
   const iterator = await getIterator(type)
   try {
     if (iterator < Enum.endGroup) {
       const nextGroup = iterator + 1
-      await CounterRepository.updateCounter(
-        { _id: getCounter(type) },
-        { iterador: nextGroup },
-      )
+      await CounterRepository.updateCounter({
+        _id: getCounter(type),
+      }, {
+        iterador: nextGroup,
+      })
       return nextGroup
     }
-    await CounterRepository.updateCounter(
-      { _id: getCounter(type) },
-      { iterador: Enum.startGroup },
-    )
+    await CounterRepository.updateCounter({
+      _id: getCounter(type),
+    }, {
+      iterador: Enum.startGroup,
+    })
     return Enum.startGroup
   } catch (error) {
-    return { err: 'Cannot update counter with your type' }
+    return {
+      err: 'Cannot update counter with your type',
+    }
   }
 }
 
@@ -64,36 +73,45 @@ async function updateGroupData(plantaoAnterior, plantaoAtual, escala) {
 
     switch (escala) {
     case 1:
-      await Repository.updateOnCall(
-        { _id: plantaoAnterior._id },
-        { statusSemanal: false },
-      )
-      await Repository.updateOnCall(
-        { _id: plantaoAtual._id },
-        { escalaSemanal: date, statusSemanal: true },
-      )
+      await Repository.updateOnCall({
+        _id: plantaoAnterior._id,
+      }, {
+        statusSemanal: false,
+      })
+      await Repository.updateOnCall({
+        _id: plantaoAtual._id,
+      }, {
+        escalaSemanal: date,
+        statusSemanal: true,
+      })
       break
 
     case 2:
-      await Repository.updateOnCall(
-        { _id: plantaoAnterior._id },
-        { statusSabado: false },
-      )
-      await Repository.updateOnCall(
-        { _id: plantaoAtual._id },
-        { escalaSabado: date, statusSabado: true },
-      )
+      await Repository.updateOnCall({
+        _id: plantaoAnterior._id,
+      }, {
+        statusSabado: false,
+      })
+      await Repository.updateOnCall({
+        _id: plantaoAtual._id,
+      }, {
+        escalaSabado: date,
+        statusSabado: true,
+      })
       break
 
     case 3:
-      await Repository.updateOnCall(
-        { _id: plantaoAnterior._id },
-        { statusDomingo: false },
-      )
-      await Repository.updateOnCall(
-        { _id: plantaoAtual._id },
-        { escalaDomingo: date, statusDomingo: true },
-      )
+      await Repository.updateOnCall({
+        _id: plantaoAnterior._id,
+      }, {
+        statusDomingo: false,
+      })
+      await Repository.updateOnCall({
+        _id: plantaoAtual._id,
+      }, {
+        escalaDomingo: date,
+        statusDomingo: true,
+      })
       break
 
     default:
@@ -125,7 +143,9 @@ async function getNextGroups(escala, plantaoAtual) {
 
     case 3:
       // Sunday
-      nextGroup = await Repository.getByNumber(await updateCounter('sunday'))
+      nextGroup = await Repository.getByNumber(
+        await updateCounter('sunday'),
+      )
       break
 
     default:
@@ -207,16 +227,18 @@ async function getPeriod(firstDate, secondDate) {
         futureIterator.IncreaseAndResetCounter(checkScaleType(dayWeek))
       }
 
-      onCallList.push({
-        [months[firstMoment.month()]]: [{
-          day: firstMoment.format('YYYY-MM-DD'),
+      const makeObjToPushOnList = (date, dayWeek) => ({
+        [months[date.month()]]: [{
+          day: date.format('YYYY-MM-DD'),
           pharmacys: fullListOnCall[futureIterator[
-            checkScaleType(dayWeekFirstMoment)] - 1].farmacias,
+            checkScaleType(dayWeek)] - 1].farmacias,
           group: fullListOnCall[futureIterator[
-            checkScaleType(dayWeekFirstMoment)] - 1].name,
+            checkScaleType(dayWeek)] - 1].name,
         }],
       })
       // push the first group based on a type of iterator
+
+      onCallList.push(makeObjToPushOnList(firstMoment, dayWeekFirstMoment))
 
       const daysToIterateFromSecondDate = secondMoment.diff(firstMoment, 'days')
 
@@ -237,19 +259,15 @@ async function getPeriod(firstDate, secondDate) {
             // push rest groups based on a type of iterator
           })
         } else {
-          onCallList.push({
-            [months[dateTomorrow.month()]]: [{
-              day: dateTomorrow.format('YYYY-MM-DD'),
-              pharmacys: fullListOnCall[futureIterator[
-                checkScaleType(dayWeek)] - 1].farmacias,
-              group: fullListOnCall[futureIterator[
-                checkScaleType(dayWeek)] - 1].name,
-            }],
-          })
+          onCallList.push(makeObjToPushOnList(dateTomorrow, dayWeek))
         }
       }
       return onCallList
-    } throw new Error(`Problem with dates:  ${firstDate} or ${secondDate}, arent after ${dateNow.format('YYYY-MM-DD')}`)
+    }
+    throw new Error(
+      `Problem with your dates: ${firstDate} or ${secondDate}, 
+      🤔 maybe they are not after ${dateNow.format('YYYY-MM-DD')}`,
+    )
   } catch (error) {
     return console.error(error.message)
   }
