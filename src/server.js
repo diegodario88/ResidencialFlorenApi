@@ -4,9 +4,10 @@ const cors = require('cors')
 const helmet = require('helmet')
 const bodyParser = require('body-parser')
 const middlewares = require('./middlewares')
-const routes = require('./app/controllers/routes')
+const routesV2 = require('./routes')
+
 require('dotenv').config()
-require('./app/services/date')
+require('./app/services/changer')
 
 function normalizePort(val) {
   const port = parseInt(val, 10)
@@ -26,21 +27,21 @@ const port = normalizePort(process.env.PORT || 1337)
 app.use(morgan('common'))
 app.use(helmet())
 app.use(cors())
-app.use(routes.limiter)
+app.use(routesV2.limiter)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.listen(port, () => console.log(`FlorenceAPI status: 🆙 port:${port} receiving requests`))
+app.listen(port, () => console.log(`FlorenceAPI running on port:${port}`))
 
 app.get('/', (req, res) => {
   res.status(200).send({
     title: 'Florence - Api',
     description: 'Fornece informações sobre as farmácias de plantão',
-    mainRoute: '/api/v1/plantoes/atual',
-    version: '1.1.1',
+    mainRoute: '/api/v2/oncalls/today',
+    version: '1.2.0',
     author: 'Diego Dario',
   })
 })
 
-app.use('/api/v1', routes.router)
+app.use('/api/v2', routesV2.router)
 app.use(middlewares.notFound)
 app.use(middlewares.errorHandler)

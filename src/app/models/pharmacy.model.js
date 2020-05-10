@@ -1,15 +1,15 @@
 const mongoose = require('../../database')
 
-const FarmaciaSchema = new mongoose.Schema({
+const pharmacySchema = new mongoose.Schema({
   name: {
     type: String,
     require: true,
   },
-  endereco: {
+  phone: {
     type: String,
     require: true,
   },
-  telefone: {
+  address: {
     type: String,
     require: true,
   },
@@ -19,6 +19,6 @@ const FarmaciaSchema = new mongoose.Schema({
   },
 })
 
-const Farmacia = mongoose.model('Farmacia', FarmaciaSchema, 'Farmacias', { versionKey: false })
+const Pharmacy = mongoose.model('Pharmacy', pharmacySchema)
 
-module.exports = Farmacia
+module.exports = Pharmacy

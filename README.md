@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <a href="https://floren-api.appspot.com">
-    <img src="./nodejs-cli-banner.png" alt="Logo" width="1000" height="200">
+    <img src="./Firmware.svg" alt="Logo" width="1000" height="200">
   </a>
 
   <h3 align="center">Residencial Floren API</h3>

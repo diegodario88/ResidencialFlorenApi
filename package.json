@@ -4,7 +4,7 @@
   "description": "API para automatização das farmácias de plantão.",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
+    "dev": "nodemon --inspect src/server.js ",
     "start": "node src/server.js"
   },
   "keywords": [],
@@ -21,6 +21,7 @@
     "mongoose": "^5.7.12",
     "morgan": "^1.9.1",
     "node-cron": "^2.0.3",
+    "ramda": "^0.27.0",
     "rate-limit-mongo": "^2.1.0",
     "request": "^2.88.2",
     "twitter": "^1.7.1"

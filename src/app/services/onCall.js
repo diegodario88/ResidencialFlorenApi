@@ -1,28 +1,23 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable no-unused-expressions */
-const moment = require('moment')
-const Repository = require('../repositories/onCall')
-const CounterRepository = require('../repositories/counter')
+const oncallRepository = require('../repositories/oncall.repo')
+const counterRepository = require('../repositories/counter.repo')
+const { checkScaleType } = require('../utils/scale.utils')
+const { currentDateFormated, findCurrentDayOfWeek, currentDate } = require('../utils/date.utils')
 
-function getCounter(type) {
-  return ({
-    weekDay: '5e06e91a1c9d440000ad44f0',
-    saturday: '5e06e9571c9d440000ad44f1',
-    sunday: '5e06e97d1c9d440000ad44f2',
-  }[type] || 'ID not found')
-}
+const getCounter = (type) => ({
+  weekday: '5eb58959386f6e1128aec310',
+  saturday: '5eb58a08386f6e1128aec311',
+  sunday: '5eb58a3a386f6e1128aec312',
+}[type] || 'ID not found')
 
-async function getIterator(type) {
+const getIterator = async (type) => {
   try {
-    const {
-      iterador,
-    } = {
-      weekDay: await CounterRepository.findById(getCounter('weekDay')),
-      saturday: await CounterRepository.findById(getCounter('saturday')),
-      sunday: await CounterRepository.findById(getCounter('sunday')),
+    const { iterator } = {
+      weekday: await counterRepository.findById(getCounter('weekDay')),
+      saturday: await counterRepository.findById(getCounter('saturday')),
+      sunday: await counterRepository.findById(getCounter('sunday')),
     }[type]
 
-    return iterador
+    return iterator
   } catch (error) {
     return {
       err: ' Cannot find type',
@@ -30,27 +25,19 @@ async function getIterator(type) {
   }
 }
 
-async function updateCounter(type) {
-  const Enum = Object.freeze({
-    startGroup: 1,
-    endGroup: 13,
-  })
+const updateCounter = async (type) => {
+  const Enum = Object.freeze({ startGroup: 1, endGroup: 13 })
   const iterator = await getIterator(type)
+
   try {
     if (iterator < Enum.endGroup) {
       const nextGroup = iterator + 1
-      await CounterRepository.updateCounter({
-        _id: getCounter(type),
-      }, {
-        iterador: nextGroup,
-      })
+      await counterRepository.update({ _id: getCounter(type) }, { iterator: nextGroup })
       return nextGroup
     }
-    await CounterRepository.updateCounter({
-      _id: getCounter(type),
-    }, {
-      iterador: Enum.startGroup,
-    })
+
+    await counterRepository.update({ _id: getCounter(type) }, { iterator: Enum.startGroup })
+
     return Enum.startGroup
   } catch (error) {
     return {
@@ -59,222 +46,54 @@ async function updateCounter(type) {
   }
 }
 
-async function updateGroupData(plantaoAnterior, plantaoAtual, escala) {
+const reportUpdate = (prev, next) => console.log(`
+🤖 Updating data
+Date: ${currentDateFormated} 
+Scale: ${findCurrentDayOfWeek}
+_____________
+⏮ Previous: ${prev.name}
+⏭ Next: ${next.name}
+`)
+
+const onCallUpdater = async (prev, next) => {
+  reportUpdate(prev, next)
+
   try {
-    const date = moment().utcOffset('-03:00')
-    console.log(`
-            Atualizando dados --> 
-            Data: ${date.format('DD/MM/YYYY')} 
-            Escala: ${escala}
-            _____________
-            Plantão anterior: ${plantaoAnterior.name}
-            Plantão atual: ${plantaoAtual.name}
-            `)
+    const resPrev = await oncallRepository.update(
+      { _id: prev._id }, { [`${findCurrentDayOfWeek}.status`]: false },
+    ) // updates prev
 
-    switch (escala) {
-    case 1:
-      await Repository.updateOnCall({
-        _id: plantaoAnterior._id,
-      }, {
-        statusSemanal: false,
-      })
-      await Repository.updateOnCall({
-        _id: plantaoAtual._id,
-      }, {
-        escalaSemanal: date,
-        statusSemanal: true,
-      })
-      break
+    const resNext = await oncallRepository.update({ _id: next._id }, {
+      [`${findCurrentDayOfWeek}.date`]: currentDate.utcOffset('-03:00'),
+      [`${findCurrentDayOfWeek}.status`]: true,
+    }) // updates next
 
-    case 2:
-      await Repository.updateOnCall({
-        _id: plantaoAnterior._id,
-      }, {
-        statusSabado: false,
-      })
-      await Repository.updateOnCall({
-        _id: plantaoAtual._id,
-      }, {
-        escalaSabado: date,
-        statusSabado: true,
-      })
-      break
+    const isUpdated = resPrev.ok && resNext.ok
 
-    case 3:
-      await Repository.updateOnCall({
-        _id: plantaoAnterior._id,
-      }, {
-        statusDomingo: false,
-      })
-      await Repository.updateOnCall({
-        _id: plantaoAtual._id,
-      }, {
-        escalaDomingo: date,
-        statusDomingo: true,
-      })
-      break
-
-    default:
-      return
+    if (isUpdated) {
+      return console.log(`Updated Groups: ${prev.name} ↔️ ${next.name} successfully  ✅`)
     }
-  } catch (err) {
-    console.error(err)
+    throw new Error('⛔️ Updating groups did not return 🆗')
+  } catch (error) {
+    console.error(error)
   }
 }
 
-async function getNextGroups(escala, plantaoAtual) {
+const getNextGroup = async (currentOnCall) => {
   try {
-    let nextGroup = null
+    const scaleType = checkScaleType(currentDate)
+    const nextGroup = await oncallRepository
+      .getByNumber(await updateCounter(scaleType))
 
-    switch (escala) {
-    case 1:
-      // WeekDay
-      nextGroup = await Repository.getByNumber(
-        await updateCounter('weekDay'),
-      )
-      break
-
-    case 2:
-      // Saturday
-      nextGroup = await Repository.getByNumber(
-        await updateCounter('saturday'),
-      )
-      break
-
-    case 3:
-      // Sunday
-      nextGroup = await Repository.getByNumber(
-        await updateCounter('sunday'),
-      )
-      break
-
-    default:
-      return
-    }
-
+    // eslint-disable-next-line no-unused-expressions
     nextGroup !== undefined
-      ? updateGroupData(plantaoAtual, nextGroup, escala)
+      ? onCallUpdater(currentOnCall, nextGroup)
       : console.error('Next Group is undefined')
   } catch (err) {
     console.error('Ups! Something went wrong in nextGroup service', err)
   }
 }
 
-function getCurrentGroup() {
-  const dia = moment()
-    .utcOffset('-03:00')
-    .day()
-  const sabado = 6
-  const domingo = 0
+const getCurrentGroup = () => oncallRepository.getByStatus(findCurrentDayOfWeek)
 
-  if (dia > domingo && dia < sabado) return Repository.getByStatus('Semanal')
-
-  if (dia === sabado) return Repository.getByStatus('Sabado')
-
-  return Repository.getByStatus('Domingo')
-}
-
-async function getPeriod(firstDate, secondDate) {
-  try {
-    const dateNow = moment().startOf('day')
-    const firstMoment = moment(firstDate).startOf('day')
-    const secondMoment = moment(secondDate).endOf('month')
-    const dayWeekFirstMoment = firstMoment.day()
-    const months = [
-      'Janeiro',
-      'Fevereiro',
-      'Março',
-      'Abril',
-      'Maio',
-      'Junho',
-      'Julho',
-      'Agosto',
-      'Setembro',
-      'Outubro',
-      'Novembro',
-      'Dezembro',
-    ]
-
-    if (firstMoment.isAfter(dateNow) && secondMoment.isAfter(dateNow)) {
-      const daysToIterate = firstMoment.diff(dateNow, 'days')
-      const fullListOnCall = await Repository.get()
-      fullListOnCall.sort((a, b) => a.numero - b.numero)
-
-      const onCallList = []
-      const monday = 1
-      const friday = 5
-      const saturday = 6
-
-      const futureIterator = {
-        weekDay: await getIterator('weekDay'),
-        saturday: await getIterator('saturday'),
-        sunday: await getIterator('sunday'),
-        IncreaseAndResetCounter(type) {
-          futureIterator[type]++
-          futureIterator[type] > 13 ? futureIterator[type] = 1 : null
-        },
-      }
-
-      const checkScaleType = (day) => {
-        if (day >= monday && day <= friday) return 'weekDay'
-        if (day === saturday) return 'saturday'
-        return 'sunday'
-      }
-
-      for (let index = 1; index <= daysToIterate; index++) {
-        const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
-        const dayWeek = dateTomorrow.day()
-        futureIterator.IncreaseAndResetCounter(checkScaleType(dayWeek))
-      }
-
-      const makeObjToPushOnList = (date, dayWeek) => ({
-        [months[date.month()]]: [{
-          day: date.format('YYYY-MM-DD'),
-          pharmacys: fullListOnCall[futureIterator[
-            checkScaleType(dayWeek)] - 1].farmacias,
-          group: fullListOnCall[futureIterator[
-            checkScaleType(dayWeek)] - 1].name,
-        }],
-      })
-      // push the first group based on a type of iterator
-
-      onCallList.push(makeObjToPushOnList(firstMoment, dayWeekFirstMoment))
-
-      const daysToIterateFromSecondDate = secondMoment.diff(firstMoment, 'days')
-
-      for (let index = 1; index <= daysToIterateFromSecondDate; index++) {
-        const dateTomorrow = moment(firstMoment).add(index, 'day')
-        const dayWeek = dateTomorrow.day()
-        const month = months[dateTomorrow.month()]
-        const listIndex = (onCallList.length - 1)
-        futureIterator.IncreaseAndResetCounter(checkScaleType(dayWeek))
-        // eslint-disable-next-line no-prototype-builtins
-        if (onCallList[listIndex].hasOwnProperty(month)) {
-          onCallList[listIndex][month].push({
-            day: dateTomorrow.format('YYYY-MM-DD'),
-            pharmacys: fullListOnCall[futureIterator[
-              checkScaleType(dayWeek)] - 1].farmacias,
-            group: fullListOnCall[futureIterator[
-              checkScaleType(dayWeek)] - 1].name,
-            // push rest groups based on a type of iterator
-          })
-        } else {
-          onCallList.push(makeObjToPushOnList(dateTomorrow, dayWeek))
-        }
-      }
-      return onCallList
-    }
-    throw new Error(
-      `Problem with your dates: ${firstDate} or ${secondDate}, 
-      🤔 maybe they are not after ${dateNow.format('YYYY-MM-DD')}`,
-    )
-  } catch (error) {
-    return console.error(error.message)
-  }
-}
-
-module.exports = {
-  getNextGroups,
-  getCurrentGroup,
-  getPeriod,
-}
+module.exports = { getNextGroup, getCurrentGroup, getIterator }

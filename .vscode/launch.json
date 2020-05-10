@@ -9,7 +9,7 @@
             "protocol": "inspector",
             "restart": true,
             "request": "attach",
-            "name": "Launch Program",
+            "name": "BUG IUGUY",
             "skipFiles": [
                 "<node_internals>/**"
             ]
