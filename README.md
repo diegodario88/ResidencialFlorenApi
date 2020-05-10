@@ -5,7 +5,7 @@
     <img src="./Firmware.svg" alt="Logo" width="1000" height="200">
   </a>
 
-  <h3 align="center">Residencial Floren API</h3>
+  <h3 align="center">Floren API</h3>
 
   <p align="center">
     Um modelo de API RESTish moderadamente opinativo criado com Node.js
@@ -16,7 +16,7 @@
 
 ### About
 Projetado para abstrair minimamente a lógica do banco de dados, esse modelo cria decisões comuns de design de API e permite distribuir rapidamente seus dados em formatos comuns, como JSON. 
-Essa API alimenta o projeto FrontEnd ResidencialFloren, fornecendo as farmácias que estão de plantão através do endpoint /api/v1/plantoes/atual. 
+Essa API alimenta o projeto FrontEnd FlorenApp, fornecendo as farmácias que estão de plantão através do endpoint /api/v2/oncalls/today. 
 
 ### Features
 + Versioning
@@ -26,11 +26,6 @@ Essa API alimenta o projeto FrontEnd ResidencialFloren, fornecendo as farmácias
 + Extensibility
 + The Javascript you know and love
 + Minimal abstractions
-
-
-### Organization
-Each version of the API functions as a self-contained module, and therefore has its own ````package.json````, ````README````, and dependencies.
-
 
 ### Install
 ````
@@ -47,7 +42,7 @@ npm install
 npm start
 ````
 
-The API runs on port ````3000```` by default, and the root can be accessed by navigating to ````http://localhost:3000 in your browser.
+The API runs on port ````1337```` by default, and the root can be accessed by navigating to ````http://localhost:1337 in your browser.
 
 ### Author
 [Diego Dario](https://github.com/diegodario88).
