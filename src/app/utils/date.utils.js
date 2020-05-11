@@ -1,5 +1,4 @@
 const moment = require('moment')
-const { checkScaleType } = require('../utils/scale.utils')
 
 // Date utilities to avoid circular dependencies.
 const monthsPtBr = [
@@ -28,20 +27,11 @@ const currentDayOfWeek = (() => moment().utcOffset('-03:00').day())()
 
 const yesterdayDayOfWeek = (() => moment().subtract(1, 'day').utcOffset('-03:00').day())()
 
-const findCurrentDayOfWeek = (() => {
-  const whichType = Object.freeze({
-    weekday: 'weekday',
-    saturday: 'saturday',
-    sunday: 'sunday',
-  })
-  const type = checkScaleType(currentDayOfWeek)
-  return whichType[type]
-})()
 
 module.exports = {
   currentDateFormated,
   currentDate,
   yesterdayDayOfWeek,
-  findCurrentDayOfWeek,
+  currentDayOfWeek,
   monthsPtBr,
 }

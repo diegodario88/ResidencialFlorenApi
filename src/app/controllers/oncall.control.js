@@ -1,7 +1,8 @@
 const Repository = require('../repositories/oncall.repo')
 const { isEmpty } = require('../utils/scale.utils')
 const { getFutureOnCallByPeriod } = require('../services/future')
-const { findCurrentDayOfWeek } = require('../utils/date.utils')
+const { checkScaleType } = require('../utils/scale.utils')
+const { currentDayOfWeek } = require('../utils/date.utils')
 
 module.exports = {
 
@@ -20,7 +21,7 @@ module.exports = {
 
   async getCurrent(req, res, next) {
     try {
-      const entries = await Repository.getByStatus(findCurrentDayOfWeek)
+      const entries = await Repository.getByStatus(checkScaleType(currentDayOfWeek))
 
       if (!isEmpty(entries)) return res.status(200).json(entries)
 

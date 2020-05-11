@@ -4,6 +4,6 @@ const counterSchema = new mongoose.Schema({
   name: String,
   iterator: Number,
 })
-const Contador = mongoose.model('Counter', counterSchema)
+const Counter = mongoose.model('Counter', counterSchema)
 
-module.exports = Contador
+module.exports = Counter

@@ -5,14 +5,13 @@ const oncallRepository = require('../repositories/oncall.repo')
 const twitterService = require('./twitter')
 const printService = require('./printScreen')
 const { getNextGroup } = require('./onCall')
-const {
-  currentDate, currentDateFormated, findCurrentDayOfWeek,
-} = require('../utils/date.utils')
+const { checkScaleType } = require('../utils/scale.utils')
+const { currentDate, currentDateFormated, currentDayOfWeek } = require('../utils/date.utils')
 
 const handleDateChange = async () => {
   try {
-    const currentOnCall = await oncallRepository.getByStatus(findCurrentDayOfWeek)
-    const { [findCurrentDayOfWeek]: { date } } = currentOnCall
+    const currentOnCall = await oncallRepository.getByStatus(checkScaleType(currentDayOfWeek))
+    const { [checkScaleType(currentDayOfWeek)]: { date } } = currentOnCall
 
     const onCallPreviousDate = moment(date)
     const isNextYear = currentDate.year() > onCallPreviousDate.year()
@@ -36,7 +35,7 @@ cron.schedule('0 18 * * *', async () => {
   timezone: 'America/Sao_Paulo',
 })
 
-cron.schedule('0 0 * * *', () => {
+cron.schedule('* * * * *', () => {
   console.warn('Looking for date changes ⏰')
   handleDateChange()
 }, {

@@ -7,20 +7,10 @@ const checkScaleType = (day) => {
   return 'sunday'
 }
 
-const findScaleDate = (dates, day) => {
-  const whichDate = Object.freeze({
-    weekDay: dates[0],
-    saturday: dates[1],
-    sunday: dates[2],
-  })
-  const type = checkScaleType(day)
-  return whichDate[type]
-}
-
 const isEmpty = (obj) => {
   const isNullOrUndefined = obj === null || obj === undefined
   if (isNullOrUndefined) return true
   return Object.keys(obj).length === 0
 }
 
-module.exports = { checkScaleType, findScaleDate, isEmpty }
+module.exports = { checkScaleType, isEmpty }
