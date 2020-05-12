@@ -3,9 +3,11 @@ const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
 const bodyParser = require('body-parser')
+const swaggerUi = require('swagger-ui-express')
+const openApiDocumentation = require('./docs/openApiDocumentation')
+
 const middlewares = require('./middlewares')
 const routesV2 = require('./routes')
-
 require('dotenv').config()
 require('./app/services/changer')
 
@@ -32,15 +34,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.listen(port, () => console.log(`FlorenceAPI running on port:${port}`))
 
-app.get('/', (req, res) => {
-  res.status(200).send({
-    title: 'Florence - Api',
-    description: 'Fornece informações sobre as farmácias de plantão',
-    mainRoute: '/api/v2/oncalls/today',
-    version: '1.2.0',
-    author: 'Diego Dario',
-  })
-})
+app.use('/', swaggerUi.serve, swaggerUi.setup(openApiDocumentation))
 
 app.use('/api/v2', routesV2.router)
 app.use(middlewares.notFound)

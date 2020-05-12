@@ -68,9 +68,8 @@ const onCallUpdater = async (prev, next) => {
     const isUpdated = !!(resPrev.ok && resNext.ok)
 
     if (isUpdated) {
-      return console.log(`
-      Updated Groups: ${prev.name} ↔️ ${next.name} successfully  ✅
-      `)
+      return console
+        .log(`Updated Groups: ${prev.name} ↔️  ${next.name} successfully  ✅`)
     }
 
     throw new Error('⛔️ Updating groups did not return 🆗')

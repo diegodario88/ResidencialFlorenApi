@@ -4,7 +4,7 @@ const moment = require('moment')
 const oncallRepository = require('../repositories/oncall.repo')
 const twitterService = require('./twitter')
 const printService = require('./printScreen')
-const { getNextGroup } = require('./onCall')
+const { getNextGroup } = require('./oncall')
 const { checkScaleType } = require('../utils/scale.utils')
 const { currentDate, currentDateFormated, currentDayOfWeek } = require('../utils/date.utils')
 
@@ -35,7 +35,7 @@ cron.schedule('0 18 * * *', async () => {
   timezone: 'America/Sao_Paulo',
 })
 
-cron.schedule('* * * * *', () => {
+cron.schedule('0 0 * * *', () => {
   console.warn('Looking for date changes ⏰')
   handleDateChange()
 }, {

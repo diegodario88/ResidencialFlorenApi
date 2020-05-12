@@ -23,6 +23,9 @@ const currentDateFormated = (() => moment()
 const currentDate = (() => moment()
   .utcOffset('-03:00'))()
 
+const currentDateUTC = (() => moment()
+  .startOf('day'))()
+
 const currentDayOfWeek = (() => moment().utcOffset('-03:00').day())()
 
 const yesterdayDayOfWeek = (() => moment().subtract(1, 'day').utcOffset('-03:00').day())()
@@ -34,4 +37,5 @@ module.exports = {
   yesterdayDayOfWeek,
   currentDayOfWeek,
   monthsPtBr,
+  currentDateUTC,
 }

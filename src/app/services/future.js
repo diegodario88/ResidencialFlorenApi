@@ -2,26 +2,16 @@
 /* eslint-disable no-plusplus */
 const moment = require('moment')
 const Repository = require('../repositories/oncall.repo')
-const { getIterator } = require('./onCall')
-const { currentDate, monthsPtBr } = require('../utils/date.utils')
+const { getIterator } = require('./oncall')
+const { currentDate, monthsPtBr, currentDateUTC } = require('../utils/date.utils')
 const { checkScaleType } = require('../utils/scale.utils')
 
 const futureGroups = []
 
 const onCallList = async () => {
-  const list = await Repository.get()
-  return list.sort((a, b) => a.numero - b.numero)
+  const list = await Repository.getAll()
+  return list.sort((a, b) => a.number - b.number)
 }
-
-const handleIterator = async () => ({
-  weekDay: await getIterator('weekDay'),
-  saturday: await getIterator('saturday'),
-  sunday: await getIterator('sunday'),
-  updateCounter(type) {
-    handleIterator[type]++
-    handleIterator[type] > 13 ? handleIterator[type] = 1 : null
-  },
-})
 
 const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
   try {
@@ -30,10 +20,18 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     const dayWeekFirstMoment = firstMoment.day()
     const isFuture = firstMoment.isAfter(currentDate) && secondMoment.isAfter(currentDate)
     const groups = await onCallList()
-    const futureIterator = await handleIterator()
+    const futureIterator = {
+      weekday: await getIterator('weekday'),
+      saturday: await getIterator('saturday'),
+      sunday: await getIterator('sunday'),
+      updateCounter: (type) => {
+        futureIterator[type]++
+        futureIterator[type] > 13 ? futureIterator[type] = 1 : null
+      },
+    }
 
     if (isFuture) {
-      const daysToIterate = firstMoment.diff(currentDate, 'days')
+      const daysToIterate = firstMoment.diff(currentDateUTC, 'days')
 
       for (let index = 1; index <= daysToIterate; index++) {
         const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
@@ -44,8 +42,8 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
       const makeObjToPushOnList = (date, dayWeek) => ({
         [monthsPtBr[date.month()]]: [{
           day: date.format('YYYY-MM-DD'),
-          pharmacys: groups[futureIterator[
-            checkScaleType(dayWeek)] - 1].farmacias,
+          pharmacies: groups[futureIterator[
+            checkScaleType(dayWeek)] - 1].pharmacies,
           group: groups[futureIterator[
             checkScaleType(dayWeek)] - 1].name,
         }],
@@ -66,8 +64,8 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
         if (futureGroups[listIndex].hasOwnProperty(month)) {
           futureGroups[listIndex][month].push({
             day: dateTomorrow.format('YYYY-MM-DD'),
-            pharmacys: groups[futureIterator[
-              checkScaleType(dayWeek)] - 1].farmacias,
+            pharmacies: groups[futureIterator[
+              checkScaleType(dayWeek)] - 1].pharmacies,
             group: groups[futureIterator[
               checkScaleType(dayWeek)] - 1].name,
             // push rest groups based on a type of iterator
@@ -83,7 +81,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
         🤔 maybe they are not after ${currentDate.format('YYYY-MM-DD')}`,
     )
   } catch (error) {
-    return console.error(error.message)
+    return console.error(error.message, error)
   }
 }
 
