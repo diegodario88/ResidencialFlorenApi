@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <a href="https://floren-api.appspot.com">
-    <img src="./Firmware.svg" alt="Logo" width="1000" height="200">
+    <img src="./apiscreenshot.png" alt="Logo" width="1000" height="600">
   </a>
 
   <h3 align="center">Floren API</h3>
