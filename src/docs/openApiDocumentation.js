@@ -16,10 +16,10 @@ module.exports = {
     },
   },
   host: 'https://floren-api.appspot.com/',
-  basePath: '/v2',
+  basePath: '/api/v2',
   servers: [
     {
-      url: 'http://localhost:1337/',
+      url: 'http://localhost:1337',
       description: 'Local testing server',
     },
     {
@@ -46,7 +46,7 @@ module.exports = {
     'http',
   ],
   paths: {
-    '/pharmacies': {
+    '/api/v2/pharmacies': {
       post: {
         tags: [
           'pharmacy',
@@ -152,7 +152,7 @@ module.exports = {
         },
       },
     },
-    '/pharmacies/{pharmaId}': {
+    '/api/v2/pharmacies/{pharmaId}': {
       get: {
         tags: [
           'pharmacy',
@@ -237,7 +237,7 @@ module.exports = {
         ],
       },
     },
-    '/pharmacies/pharma/:name': {
+    '/api/v2/pharmacies/pharma/:name': {
       get: {
         tags: [
           'pharmacy',
@@ -279,7 +279,7 @@ module.exports = {
         ],
       },
     },
-    '/oncalls': {
+    '/api/v2/oncalls': {
       post: {
         tags: [
           'oncall',
@@ -374,7 +374,7 @@ module.exports = {
         },
       },
     },
-    '/oncalls/{oncallId}': {
+    '/api/v2/oncalls/{oncallId}': {
       get: {
         tags: [
           'oncall',
@@ -459,7 +459,7 @@ module.exports = {
         ],
       },
     },
-    '/oncalls/oncall/:name': {
+    '/api/v2/oncalls/oncall/:name': {
       get: {
         tags: [
           'oncall',
@@ -501,7 +501,7 @@ module.exports = {
         ],
       },
     },
-    '/oncalls/today': {
+    '/api/v2/oncalls/today': {
       get: {
         tags: [
           'oncall',
@@ -537,7 +537,7 @@ module.exports = {
         },
       },
     },
-    '/oncalls/future': {
+    '/api/v2/oncalls/future': {
       post: {
         tags: [
           'oncall',

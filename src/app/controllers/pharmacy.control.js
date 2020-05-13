@@ -1,5 +1,8 @@
 const Repository = require('../repositories/pharmacy.repo')
 const { isEmpty } = require('../utils/scale.utils')
+require('dotenv').config()
+
+const { API_KEY } = process.env
 
 module.exports = {
 
@@ -45,6 +48,11 @@ module.exports = {
 
   async store(req, res, next) {
     try {
+      if (req.get('X-API-KEY') !== API_KEY) {
+        res.status(401)
+        throw new Error('UnAuthorized')
+      }
+
       const { name } = req.body
 
       let pharmacy = await Repository.getByName(name)
@@ -63,6 +71,11 @@ module.exports = {
 
   async edit(req, res, next) {
     try {
+      if (req.get('X-API-KEY') !== API_KEY) {
+        res.status(401)
+        throw new Error('UnAuthorized')
+      }
+
       const { name } = req.body
 
       const pharmacy = await Repository.getByName(name)
@@ -88,6 +101,11 @@ module.exports = {
 
   async destroy(req, res, next) {
     try {
+      if (req.get('X-API-KEY') !== API_KEY) {
+        res.status(401)
+        throw new Error('UnAuthorized')
+      }
+
       const { ok } = await Repository.destroy({ _id: req.params.id })
 
       if (ok) {

@@ -33,9 +33,8 @@ app.use(routesV2.limiter)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.listen(port, () => console.log(`FlorenceAPI running on port:${port}`))
-
+app.use('/api/v2', routesV2.router)
 app.use('/', swaggerUi.serve, swaggerUi.setup(openApiDocumentation))
 
-app.use('/api/v2', routesV2.router)
 app.use(middlewares.notFound)
 app.use(middlewares.errorHandler)

@@ -3,6 +3,9 @@ const { isEmpty } = require('../utils/scale.utils')
 const { getFutureOnCallByPeriod } = require('../services/future')
 const { checkScaleType } = require('../utils/scale.utils')
 const { currentDayOfWeek } = require('../utils/date.utils')
+require('dotenv').config()
+
+const { API_KEY } = process.env
 
 module.exports = {
 
@@ -62,6 +65,10 @@ module.exports = {
 
   async store(req, res, next) {
     try {
+      if (req.get('X-API-KEY') !== API_KEY) {
+        res.status(401)
+        throw new Error('UnAuthorized')
+      }
       const { name } = req.body
 
       let onCall = await Repository.getByName(name)
@@ -80,6 +87,11 @@ module.exports = {
 
   async edit(req, res, next) {
     try {
+      if (req.get('X-API-KEY') !== API_KEY) {
+        res.status(401)
+        throw new Error('UnAuthorized')
+      }
+
       const { name } = req.body
 
       const onCall = await Repository.getByName(name)
@@ -106,6 +118,11 @@ module.exports = {
 
   async destroy(req, res, next) {
     try {
+      if (req.get('X-API-KEY') !== API_KEY) {
+        res.status(401)
+        throw new Error('UnAuthorized')
+      }
+
       const { ok } = await Repository.destroy({ _id: req.params.id })
 
       if (ok) {
