@@ -18,7 +18,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     const firstMoment = moment(firstDate).startOf('day')
     const secondMoment = moment(secondDate).endOf('month')
     const dayWeekFirstMoment = firstMoment.day()
-    const isFuture = firstMoment.isAfter(currentDate) && secondMoment.isAfter(currentDate)
+    const isFuture = firstMoment.isAfter(currentDate()) && secondMoment.isAfter(currentDate())
     const groups = await onCallList()
     const futureIterator = {
       weekday: await getIterator('weekday'),
@@ -31,7 +31,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     }
 
     if (isFuture) {
-      const daysToIterate = firstMoment.diff(currentDateUTC, 'days')
+      const daysToIterate = firstMoment.diff(currentDateUTC(), 'days')
 
       for (let index = 1; index <= daysToIterate; index++) {
         const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
@@ -78,7 +78,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     }
     throw new Error(
       `Problem with your dates: ${firstDate} or ${secondDate},
-        🤔 maybe they are not after ${currentDate.format('YYYY-MM-DD')}`,
+        🤔 maybe they are not after ${currentDate().format('YYYY-MM-DD')}`,
     )
   } catch (error) {
     return console.error(error.message, error)

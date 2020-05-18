@@ -10,16 +10,16 @@ const { currentDate, currentDateFormated, currentDayOfWeek } = require('../utils
 
 const handleDateChange = async () => {
   try {
-    const currentOnCall = await oncallRepository.getByStatus(checkScaleType(currentDayOfWeek))
-    const { [checkScaleType(currentDayOfWeek)]: { date } } = currentOnCall
+    const currentOnCall = await oncallRepository.getByStatus(checkScaleType(currentDayOfWeek()))
+    const { [checkScaleType(currentDayOfWeek())]: { date } } = currentOnCall
 
     const onCallPreviousDate = moment(date)
-    const isNextYear = currentDate.year() > onCallPreviousDate.year()
-    const isNextDay = currentDate.dayOfYear() > onCallPreviousDate.dayOfYear()
+    const isNextYear = currentDate().year() > onCallPreviousDate.year()
+    const isNextDay = currentDate().dayOfYear() > onCallPreviousDate.dayOfYear()
 
     if (isNextYear || isNextDay) {
       console
-        .info(`Date has been changed to ${currentDateFormated}. Calling updater ↩️`)
+        .info(`Date has been changed to ${currentDateFormated()}. Calling updater ↩️`)
       getNextGroup(currentOnCall)
     }
   } catch (error) {
@@ -35,7 +35,7 @@ cron.schedule('0 18 * * *', async () => {
   timezone: 'America/Sao_Paulo',
 })
 
-cron.schedule('0 0 * * *', () => {
+cron.schedule('* * * * *', () => {
   console.warn('Looking for date changes ⏰')
   handleDateChange()
 }, {

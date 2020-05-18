@@ -45,8 +45,8 @@ const updateCounter = async (type) => {
 
 const reportUpdate = (prev, next) => console.log(`
 🤖 Updating data
-Date: ${currentDateFormated} 
-Scale: ${checkScaleType(currentDayOfWeek)}
+Date: ${currentDateFormated()} 
+Scale: ${checkScaleType(currentDayOfWeek())}
 _____________
 ⏮ Previous: ${prev.name}
 ⏭ Next: ${next.name}
@@ -57,12 +57,12 @@ const onCallUpdater = async (prev, next) => {
 
   try {
     const resPrev = await oncallRepository.update(
-      { _id: prev._id }, { [`${checkScaleType(currentDayOfWeek)}.status`]: false },
+      { _id: prev._id }, { [`${checkScaleType(currentDayOfWeek())}.status`]: false },
     )
 
     const resNext = await oncallRepository.update({ _id: next._id }, {
-      [`${checkScaleType(currentDayOfWeek)}.date`]: currentDate.utcOffset('-03:00'),
-      [`${checkScaleType(currentDayOfWeek)}.status`]: true,
+      [`${checkScaleType(currentDayOfWeek())}.date`]: currentDate().utcOffset('-03:00'),
+      [`${checkScaleType(currentDayOfWeek())}.status`]: true,
     })
 
     const isUpdated = !!(resPrev.ok && resNext.ok)
@@ -81,7 +81,7 @@ const onCallUpdater = async (prev, next) => {
 const getNextGroup = async (currentOnCall) => {
   try {
     const nextGroup = await oncallRepository
-      .getByNumber(await updateCounter(checkScaleType(currentDayOfWeek)))
+      .getByNumber(await updateCounter(checkScaleType(currentDayOfWeek())))
 
     // eslint-disable-next-line no-unused-expressions
     nextGroup !== undefined
@@ -92,7 +92,7 @@ const getNextGroup = async (currentOnCall) => {
   }
 }
 
-const getCurrentGroup = () => oncallRepository.getByStatus(checkScaleType(currentDayOfWeek))
+const getCurrentGroup = () => oncallRepository.getByStatus(checkScaleType(currentDayOfWeek()))
 
 module.exports = {
   getNextGroup, getCurrentGroup, getIterator, getCounterId,

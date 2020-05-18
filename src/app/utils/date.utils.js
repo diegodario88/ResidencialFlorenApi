@@ -17,24 +17,21 @@ const monthsPtBr = [
 ]
 
 
-const currentDateFormated = (() => moment()
-  .utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A'))()
+const currentDateFormated = () => moment()
+  .utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A')
 
-const currentDate = (() => moment()
-  .utcOffset('-03:00'))()
+const currentDate = () => moment()
+  .utcOffset('-03:00')
 
-const currentDateUTC = (() => moment()
-  .startOf('day'))()
+const currentDateUTC = () => moment()
+  .startOf('day')
 
-const currentDayOfWeek = (() => moment().utcOffset('-03:00').day())()
-
-const yesterdayDayOfWeek = (() => moment().subtract(1, 'day').utcOffset('-03:00').day())()
+const currentDayOfWeek = () => moment().utcOffset('-03:00').day()
 
 
 module.exports = {
   currentDateFormated,
   currentDate,
-  yesterdayDayOfWeek,
   currentDayOfWeek,
   monthsPtBr,
   currentDateUTC,
