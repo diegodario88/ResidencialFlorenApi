@@ -35,7 +35,7 @@ cron.schedule('0 18 * * *', async () => {
   timezone: 'America/Sao_Paulo',
 })
 
-cron.schedule('* * * * *', () => {
+cron.schedule('0 0 * * *', () => {
   console.warn('Looking for date changes ⏰')
   handleDateChange()
 }, {

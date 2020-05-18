@@ -24,7 +24,7 @@ module.exports = {
 
   async getCurrent(req, res, next) {
     try {
-      const entries = await Repository.getByStatus(checkScaleType(currentDayOfWeek))
+      const entries = await Repository.getByStatus(checkScaleType(currentDayOfWeek()))
 
       if (!isEmpty(entries)) return res.status(200).json(entries)
 
