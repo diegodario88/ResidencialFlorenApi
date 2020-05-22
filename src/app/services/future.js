@@ -18,7 +18,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     const firstMoment = moment(firstDate).startOf('day')
     const secondMoment = moment(secondDate).endOf('month')
     const dayWeekFirstMoment = firstMoment.day()
-    const isFuture = firstMoment.isAfter(currentDate()) && secondMoment.isAfter(currentDate())
+    const isFuture = firstMoment.isAfter(currentDate().startOf('day')) && secondMoment.isAfter(currentDate())
     const groups = await onCallList()
     const futureIterator = {
       weekday: await getIterator('weekday'),
@@ -31,7 +31,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     }
 
     if (isFuture) {
-      const daysToIterate = firstMoment.diff(currentDate(), 'days')
+      const daysToIterate = firstMoment.diff(currentDate().startOf('day'), 'days')
 
       for (let index = 1; index <= daysToIterate; index++) {
         const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
