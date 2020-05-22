@@ -3,7 +3,7 @@
 const moment = require('moment')
 const Repository = require('../repositories/oncall.repo')
 const { getIterator } = require('./oncall')
-const { currentDate, monthsPtBr, currentDateUTC } = require('../utils/date.utils')
+const { currentDate, monthsPtBr } = require('../utils/date.utils')
 const { checkScaleType } = require('../utils/scale.utils')
 
 const futureGroups = []
@@ -31,7 +31,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     }
 
     if (isFuture) {
-      const daysToIterate = firstMoment.diff(currentDateUTC(), 'days')
+      const daysToIterate = firstMoment.diff(currentDate(), 'days')
 
       for (let index = 1; index <= daysToIterate; index++) {
         const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
