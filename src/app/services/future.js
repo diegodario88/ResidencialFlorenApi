@@ -18,27 +18,30 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     const firstMoment = moment(firstDate).startOf('day')
     const secondMoment = moment(secondDate).endOf('month')
     const dayWeekFirstMoment = firstMoment.day()
-    const isFuture = firstMoment.isAfter(currentDate().startOf('day')) && secondMoment.isAfter(currentDate())
-    const groups = await onCallList()
-    const futureIterator = {
-      weekday: await getIterator('weekday'),
-      saturday: await getIterator('saturday'),
-      sunday: await getIterator('sunday'),
-      updateCounter: (type) => {
-        futureIterator[type]++
-        futureIterator[type] > 13 ? futureIterator[type] = 1 : null
-      },
-    }
+    const firstMomentIterator = firstMoment.diff(moment().startOf('day'), 'days')
+    const isFuture = firstMoment
+      .isAfter(currentDate().startOf('day')) && secondMoment.isAfter(firstMoment)
+
 
     if (isFuture) {
-      const daysToIterate = firstMoment.diff(moment().startOf('day'), 'days')
-      for (let index = 1; index <= daysToIterate; index++) {
-        const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
-        const dayWeek = dateTomorrow.day()
-        futureIterator.updateCounter(checkScaleType(dayWeek))
+      const groups = await onCallList()
+      const futureIterator = {
+        weekday: await getIterator('weekday'),
+        saturday: await getIterator('saturday'),
+        sunday: await getIterator('sunday'),
+        updateCounter: (type) => {
+          futureIterator[type]++
+          futureIterator[type] > 13 ? futureIterator[type] = 1 : null
+        },
       }
 
-      const makeObjToPushOnList = (date, dayWeek) => ({
+      for (let index = 1; index <= firstMomentIterator; index++) {
+        const dayWeekTomorrow = moment().add(index, 'day')
+          .utcOffset('-03:00').day()
+        futureIterator.updateCounter(checkScaleType(dayWeekTomorrow))
+      }
+
+      const groupMaker = (date, dayWeek) => ({
         [monthsPtBr[date.month()]]: [{
           day: date.format('YYYY-MM-DD'),
           pharmacies: groups[futureIterator[
@@ -49,15 +52,16 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
       })
       // push the first group based on a type of iterator
 
-      futureGroups.push(makeObjToPushOnList(firstMoment, dayWeekFirstMoment))
+      futureGroups.push(groupMaker(firstMoment, dayWeekFirstMoment))
 
-      const daysToIterateFromSecondDate = secondMoment.diff(firstMoment, 'days')
+      const secondMomentIterator = secondMoment.diff(firstMoment, 'days')
 
-      for (let index = 1; index <= daysToIterateFromSecondDate; index++) {
+      for (let index = 1; index <= secondMomentIterator; index++) {
         const dateTomorrow = moment(firstMoment).add(index, 'day')
         const dayWeek = dateTomorrow.day()
         const month = monthsPtBr[dateTomorrow.month()]
         const listIndex = (futureGroups.length - 1)
+
         futureIterator.updateCounter(checkScaleType(dayWeek))
         // eslint-disable-next-line no-prototype-builtins
         if (futureGroups[listIndex].hasOwnProperty(month)) {
@@ -70,7 +74,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
             // push rest groups based on a type of iterator
           })
         } else {
-          futureGroups.push(makeObjToPushOnList(dateTomorrow, dayWeek))
+          futureGroups.push(groupMaker(dateTomorrow, dayWeek))
         }
       }
       return futureGroups
@@ -80,7 +84,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
         🤔 maybe they are not after ${currentDate().format('YYYY-MM-DD')}`,
     )
   } catch (error) {
-    return console.error(error.message, error)
+    return console.error(error.message)
   }
 }
 
