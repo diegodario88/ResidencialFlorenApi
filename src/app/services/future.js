@@ -31,8 +31,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     }
 
     if (isFuture) {
-      const daysToIterate = firstMoment.diff(currentDate().startOf('day'), 'days')
-
+      const daysToIterate = firstMoment.diff(moment().startOf('day'), 'days')
       for (let index = 1; index <= daysToIterate; index++) {
         const dateTomorrow = moment().add(index, 'day').utcOffset('-03:00')
         const dayWeek = dateTomorrow.day()
