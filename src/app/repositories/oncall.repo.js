@@ -7,8 +7,12 @@ const update = async (conditions, doc) => OncallModel
 
 const destroy = async (id) => OncallModel.deleteOne(id)
 
-const getAll = async () => OncallModel.find({})
-  .populate('pharmacies')
+const getAll = async () => {
+  const result = await OncallModel.find({})
+    .populate('pharmacies')
+  const sorted = result.sort((a, b) => a.number - b.number)
+  return sorted
+}
 
 const getById = async (id) => OncallModel.findById(id)
   .populate('pharmacies')
