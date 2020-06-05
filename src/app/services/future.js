@@ -1,10 +1,8 @@
-/* eslint-disable no-plusplus */
 const moment = require('moment')
 const Repository = require('../repositories/oncall.repo')
 const { futureIterator } = require('./counter')
 const { currentDate, monthsPtBr } = require('../utils/date.utils')
-const { checkScaleType, selfsameMoth } = require('../utils/scale.utils')
-
+const { checkScaleType, selfsameMonth } = require('../utils/scale.utils')
 
 const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
   const futureGroups = []
@@ -12,10 +10,14 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     const firstMoment = moment(firstDate).startOf('day')
     const secondMoment = moment(secondDate).endOf('month')
     const dayWeekFirstMoment = firstMoment.day()
-    const firstMomentIterator = firstMoment.diff(moment().utcOffset('-03:00').startOf('day'), 'days')
+    const firstMomentIterator = firstMoment.diff(
+      moment().utcOffset('-03:00')
+        .startOf('day'), 'days',
+    )
     const secondMomentIterator = secondMoment.diff(firstMoment, 'days')
     const isFuture = firstMoment
-      .isAfter(currentDate().startOf('day')) && secondMoment.isAfter(firstMoment)
+      .isAfter(currentDate()
+        .startOf('day')) && secondMoment.isAfter(firstMoment)
 
     if (isFuture) {
       const groups = await Repository.getAll()
@@ -26,22 +28,25 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
           .utcOffset('-03:00')
           .add(index, 'day')
           .day()
+
         iterator.updateCounter(checkScaleType(dayWeekTomorrow))
       }
 
-      const groupMaker = (date, dayWeek) => ({
-        [monthsPtBr[date.month()]]: [{
-          day: date.format('YYYY-MM-DD'),
-          pharmacies: groups[iterator[
-            checkScaleType(dayWeek)] - 1].pharmacies,
-          group: groups[iterator[
-            checkScaleType(dayWeek)] - 1].name,
-        }],
+      const objMaker = (date, dayWeek) => ({
+        day: date.format('YYYY-MM-DD'),
+        pharmacies: groups[iterator[
+          checkScaleType(dayWeek)] - 1].pharmacies,
+        group: groups[iterator[
+          checkScaleType(dayWeek)] - 1].name,
       })
-      // push the first group based on a type of iterator
 
-      futureGroups.push(groupMaker(firstMoment, dayWeekFirstMoment))
+      const monthMaker = (arr, date, dayWeek) => arr.push({
+        [monthsPtBr[date.month()]]: [objMaker(date, dayWeek)],
+      })
 
+      const groupPusher = (arr, date, dayWeek) => arr.push(objMaker(date, dayWeek))
+
+      monthMaker(futureGroups, firstMoment, dayWeekFirstMoment)
 
       for (let index = 1; index <= secondMomentIterator; index++) {
         const dateTomorrow = moment(firstDate)
@@ -53,18 +58,9 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
 
         iterator.updateCounter(checkScaleType(dayWeek))
 
-        if (selfsameMoth(futureGroups[listIndex], month)) {
-          futureGroups[listIndex][month].push({
-            day: dateTomorrow.format('YYYY-MM-DD'),
-            pharmacies: groups[iterator[
-              checkScaleType(dayWeek)] - 1].pharmacies,
-            group: groups[iterator[
-              checkScaleType(dayWeek)] - 1].name,
-            // push rest groups based on a type of iterator
-          })
-        } else {
-          futureGroups.push(groupMaker(dateTomorrow, dayWeek))
-        }
+        selfsameMonth(futureGroups[listIndex], month)
+          ? groupPusher(futureGroups[listIndex][month], dateTomorrow, dayWeek)
+          : monthMaker(futureGroups, dateTomorrow, dayWeek)
       }
 
       return futureGroups

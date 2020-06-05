@@ -13,6 +13,6 @@ const isEmpty = (obj) => {
   return Object.keys(obj).length === 0
 }
 
-const selfsameMoth = (obj, month) => Object.prototype.hasOwnProperty.call(obj, month)
+const selfsameMonth = (obj, month) => Object.prototype.hasOwnProperty.call(obj, month)
 
-module.exports = { checkScaleType, isEmpty, selfsameMoth }
+module.exports = { checkScaleType, isEmpty, selfsameMonth }

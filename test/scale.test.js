@@ -1,6 +1,6 @@
 const { describe, it } = require('mocha')
 const { expect } = require('chai')
-const { selfsameMoth } = require('../src/app/utils/scale.utils')
+const { selfsameMonth } = require('../src/app/utils/scale.utils')
 
 const month = 'Junho'
 
@@ -65,6 +65,6 @@ const futureList = [{
 
 describe('Compare if a obj has property', () => {
   it('check for a property', async () => {
-    expect(selfsameMoth(futureList[0], month)).to.equal(month)
+    expect(selfsameMonth(futureList[0], month)).to.equal(month)
   })
 })
