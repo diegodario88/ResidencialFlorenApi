@@ -54,4 +54,4 @@ async function futureIterator() {
   }
 }
 
-module.exports = { futureIterator, updateCounter }
+module.exports = { futureIterator, updateCounter, getCounterId }

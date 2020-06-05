@@ -3,7 +3,7 @@ const moment = require('moment')
 const Repository = require('../repositories/oncall.repo')
 const { futureIterator } = require('./counter')
 const { currentDate, monthsPtBr } = require('../utils/date.utils')
-const { checkScaleType } = require('../utils/scale.utils')
+const { checkScaleType, selfsameMoth } = require('../utils/scale.utils')
 
 
 const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
@@ -12,7 +12,8 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     const firstMoment = moment(firstDate).startOf('day')
     const secondMoment = moment(secondDate).endOf('month')
     const dayWeekFirstMoment = firstMoment.day()
-    const firstMomentIterator = firstMoment.diff(moment().startOf('day'), 'days')
+    const firstMomentIterator = firstMoment.diff(moment().utcOffset('-03:00').startOf('day'), 'days')
+    const secondMomentIterator = secondMoment.diff(firstMoment, 'days')
     const isFuture = firstMoment
       .isAfter(currentDate().startOf('day')) && secondMoment.isAfter(firstMoment)
 
@@ -21,8 +22,10 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
       const iterator = await futureIterator()
 
       for (let index = 1; index <= firstMomentIterator; index++) {
-        const dayWeekTomorrow = moment().add(index, 'day')
-          .utcOffset('-03:00').day()
+        const dayWeekTomorrow = moment()
+          .utcOffset('-03:00')
+          .add(index, 'day')
+          .day()
         iterator.updateCounter(checkScaleType(dayWeekTomorrow))
       }
 
@@ -39,17 +42,18 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
 
       futureGroups.push(groupMaker(firstMoment, dayWeekFirstMoment))
 
-      const secondMomentIterator = secondMoment.diff(firstMoment, 'days')
 
       for (let index = 1; index <= secondMomentIterator; index++) {
-        const dateTomorrow = moment(firstMoment).add(index, 'day')
+        const dateTomorrow = moment(firstDate)
+          .utcOffset('-03:00')
+          .add(index, 'day')
         const dayWeek = dateTomorrow.day()
         const month = monthsPtBr[dateTomorrow.month()]
         const listIndex = (futureGroups.length - 1)
 
         iterator.updateCounter(checkScaleType(dayWeek))
-        // eslint-disable-next-line no-prototype-builtins
-        if (futureGroups[listIndex].hasOwnProperty(month)) {
+
+        if (selfsameMoth(futureGroups[listIndex], month)) {
           futureGroups[listIndex][month].push({
             day: dateTomorrow.format('YYYY-MM-DD'),
             pharmacies: groups[iterator[
