@@ -2,6 +2,8 @@
 /* eslint-disable no-unused-expressions */
 const counterRepository = require('../repositories/counter.repo')
 
+const GROUPS = Object.freeze({ START: 1, END: 11 })
+
 const getCounterId = (type) => ({
   weekday: '5eb58959386f6e1128aec310',
   saturday: '5eb58a08386f6e1128aec311',
@@ -23,20 +25,19 @@ const getIterator = async (type) => {
 }
 
 const updateCounter = async (type) => {
-  const Enum = Object.freeze({ startGroup: 1, endGroup: 13 })
   const iterator = await getIterator(type)
   try {
     if (typeof (iterator) !== 'number') throw Error
 
-    if (iterator < Enum.endGroup) {
+    if (iterator < GROUPS.END) {
       const nextGroup = iterator + 1
       await counterRepository.update({ _id: getCounterId(type) }, { iterator: nextGroup })
       return nextGroup
     }
 
-    await counterRepository.update({ _id: getCounterId(type) }, { iterator: Enum.startGroup })
+    await counterRepository.update({ _id: getCounterId(type) }, { iterator: GROUPS.START })
 
-    return Enum.startGroup
+    return GROUPS.START
   } catch (error) {
     return console.error(error)
   }
@@ -49,7 +50,7 @@ async function futureIterator() {
     sunday: await getIterator('sunday'),
     updateCounter(type) {
       this[type]++
-      this[type] > 13 ? this[type] = 1 : null
+      this[type] > GROUPS.END ? this[type] = GROUPS.START : null
     },
   }
 }

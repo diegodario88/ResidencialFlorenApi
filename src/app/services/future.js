@@ -10,13 +10,11 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
     const firstMoment = moment(firstDate).startOf('day')
     const secondMoment = moment(secondDate).endOf('month')
     const dayWeekFirstMoment = firstMoment.day()
-    const firstMomentIterator = firstMoment.diff(
-      moment().utcOffset('-03:00')
-        .startOf('day'), 'days',
-    )
-    const secondMomentIterator = secondMoment.diff(firstMoment, 'days')
+    const today = moment.utc().subtract(3, 'h').startOf('day')
+    const firstMomentIterator = firstMoment.diff(today, 'day')
+    const secondMomentIterator = secondMoment.diff(firstMoment, 'day')
     const isFuture = firstMoment
-      .isAfter(currentDate()
+      .isAfter(currentDate().utcOffset('-03:00')
         .startOf('day')) && secondMoment.isAfter(firstMoment)
 
     if (isFuture) {
@@ -24,8 +22,9 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
       const iterator = await futureIterator()
 
       for (let index = 1; index <= firstMomentIterator; index++) {
-        const dayWeekTomorrow = moment()
-          .utcOffset('-03:00')
+        const dayWeekTomorrow = moment.utc()
+          .subtract(3, 'h')
+          .startOf('day')
           .add(index, 'day')
           .day()
 
@@ -50,7 +49,6 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
 
       for (let index = 1; index <= secondMomentIterator; index++) {
         const dateTomorrow = moment(firstDate)
-          .utcOffset('-03:00')
           .add(index, 'day')
         const dayWeek = dateTomorrow.day()
         const month = monthsPtBr[dateTomorrow.month()]
