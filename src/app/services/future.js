@@ -8,7 +8,7 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
   const futureGroups = []
   try {
     const firstMoment = moment(firstDate).startOf('day')
-    const secondMoment = moment(secondDate).endOf('month')
+    const secondMoment = moment(secondDate).endOf('month').startOf('d')
     const dayWeekFirstMoment = firstMoment.day()
     const today = moment.utc().subtract(3, 'h').startOf('day')
     const firstMomentIterator = firstMoment.diff(today, 'day')
@@ -22,11 +22,8 @@ const getFutureOnCallByPeriod = async (firstDate, secondDate) => {
       const iterator = await futureIterator()
 
       for (let index = 1; index <= firstMomentIterator; index++) {
-        const dayWeekTomorrow = moment.utc()
-          .subtract(3, 'h')
-          .startOf('day')
-          .add(index, 'day')
-          .day()
+        const dayWeekTomorrow = today
+          .add(index, 'day').day()
 
         iterator.updateCounter(checkScaleType(dayWeekTomorrow))
       }
