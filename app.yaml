@@ -1,5 +1,4 @@
-service: proxy
-runtime: nodejs12
+runtime: nodejs
 env: flex
 
 automatic_scaling:
