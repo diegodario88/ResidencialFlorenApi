@@ -1,8 +1,8 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
-const request = require('request')
-const fs = require('fs')
-require('dotenv').config()
+const request = require('request');
+const fs = require('fs');
+require('dotenv').config();
 
 exports.printScreen = () => new Promise((resolve, reject) => {
   try {
@@ -18,19 +18,19 @@ exports.printScreen = () => new Promise((resolve, reject) => {
       },
       (error, response, body) => {
         if (error) {
-          throw new Error(error)
+          throw new Error(error);
         } else {
           fs.writeFileSync('/tmp/floren.png', body, 'binary', (error) => {
             if (error) {
-              reject()
+              reject();
             }
-          })
-          console.log('printService works! 😄')
+          });
+          console.log('printService works! 😄');
         }
-        resolve()
+        resolve();
       },
-    )
+    );
   } catch (error) {
-    console.error('Error 🙃', error)
+    console.error('Error 🙃', error);
   }
-})
+});

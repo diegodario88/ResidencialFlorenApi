@@ -1,4 +1,4 @@
-const mongoose = require('../../database')
+const mongoose = require('../../database');
 
 const onCallScheme = new mongoose.Schema({
   name: { type: String, required: true },
@@ -21,8 +21,8 @@ const onCallScheme = new mongoose.Schema({
     date: Date,
   },
 
-})
+});
 
-const OnCall = mongoose.model('OnCall', onCallScheme)
+const OnCall = mongoose.model('OnCall', onCallScheme);
 
-module.exports = OnCall
+module.exports = OnCall;

@@ -709,4 +709,4 @@ module.exports = {
     description: 'Find out more about the project',
     url: 'http://floren.app',
   },
-}
+};

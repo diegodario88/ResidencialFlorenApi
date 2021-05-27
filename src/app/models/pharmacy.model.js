@@ -1,4 +1,4 @@
-const mongoose = require('../../database')
+const mongoose = require('../../database');
 
 const pharmacySchema = new mongoose.Schema({
   name: {
@@ -17,8 +17,8 @@ const pharmacySchema = new mongoose.Schema({
     lat: Number,
     lng: Number,
   },
-})
+});
 
-const Pharmacy = mongoose.model('Pharmacy', pharmacySchema)
+const Pharmacy = mongoose.model('Pharmacy', pharmacySchema);
 
-module.exports = Pharmacy
+module.exports = Pharmacy;

@@ -1,4 +1,4 @@
-const moment = require('moment')
+const moment = require('moment');
 
 // Date utilities to avoid circular dependencies.
 const monthsPtBr = [
@@ -14,19 +14,19 @@ const monthsPtBr = [
   'Outubro',
   'Novembro',
   'Dezembro',
-]
+];
 
 
 const currentDateFormated = () => moment()
-  .utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A')
+  .utcOffset('-03:00').format('DD/MM/YYYY - H:mm:ss A');
 
 const currentDate = () => moment()
-  .utcOffset('-03:00')
+  .utcOffset('-03:00');
 
 const currentDateUTC = () => moment()
-  .startOf('day')
+  .startOf('day');
 
-const currentDayOfWeek = () => moment().utcOffset('-03:00').day()
+const currentDayOfWeek = () => moment().utcOffset('-03:00').day();
 
 
 module.exports = {
@@ -35,4 +35,4 @@ module.exports = {
   currentDayOfWeek,
   monthsPtBr,
   currentDateUTC,
-}
+};
